@@ -1,0 +1,17 @@
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.csproj.AssemblyReference.cache
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.GeneratedMSBuildEditorConfig.editorconfig
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.AssemblyInfoInputs.cache
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.AssemblyInfo.cs
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.csproj.CoreCompileInputs.cache
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_domian.deps.json
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_domian.runtimeconfig.json
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_domian.dll
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_domian.pdb
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_application.dll
+D:\Asp_net\H-Reservation\Hotel\bin\Debug\net8.0\H_application.pdb
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.csproj.Up2Date
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.dll
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\refint\H_domian.dll
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.pdb
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_domian.genruntimeconfig.cache
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\ref\H_domian.dll

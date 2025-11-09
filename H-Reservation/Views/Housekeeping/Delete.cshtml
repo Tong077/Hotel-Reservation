@@ -1,0 +1,62 @@
+﻿@using H_application.DTOs.HousekeepingDto
+@model HousekeepingDtoUpdate
+
+@{
+    ViewData["Title"] = "Housekeeping";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Delete Housekeeping Information</h4>
+        <form asp-controller="Housekeeping" asp-action="Destroy" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="HousekeepingId" />
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="RoomId" class="text-danger"></span>
+                    <label asp-for="RoomId" class="control-label">Room Number</label>
+                    <select asp-for="RoomId" asp-items="@ViewBag.Room" class="form-control">
+                        <option>Please Select Room Number</option>
+                    </select>
+
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                    <label asp-for="EmployeeId" class="control-label">Employee Name</label>
+                    <select asp-for="EmployeeId" asp-items="@ViewBag.Employee" class="form-control">
+                        <option>Please Select Employee Name</option>
+                    </select>
+
+                </div>
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="LastCleanedDate" class="text-danger"></span>
+                    <label asp-for="LastCleanedDate" class="control-label">Last Cleaned Date</label>
+                    <input asp-for="LastCleanedDate" type="datetime-local" placeholder="Last Cleaned Date" class="form-control" />
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control">
+                        <option>Please Select Status Room</option>
+                        <option value="Available">Available</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Cleaning">Cleaning</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <span asp-validation-for="Notes" class="text-danger"></span>
+                <label asp-for="Notes" class="control-label">Notes</label>
+                <input asp-for="Notes" type="text" placeholder="Notes" class="form-control" />
+            </div>
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Delete</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>

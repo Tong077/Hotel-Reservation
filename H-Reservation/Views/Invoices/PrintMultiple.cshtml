@@ -1,0 +1,79 @@
+﻿@* @using H_application.DTOs.InvoicesDto
+@model IEnumerable<InvoicesResponse>
+
+
+    <div class="container">
+        @foreach (var invoice in Model)
+        {
+            <div class="invoice-box">
+                <div class="d-flex justify-content-between border-bottom mb-3">
+                    <h2 class="invoice-title">Invoice #@invoice.InvoiceId</h2>
+                    <div>
+                        <p class="mb-0"><strong>Date:</strong> @invoice.IssuedDate?.ToString("dd MMM yyyy")</p>
+                        <p class="mb-0"><strong>Reservation:</strong> @invoice.ReservationId</p>
+                    </div>
+                </div>
+
+                <p><strong>Guest:</strong> @invoice.GuestName</p>
+
+                <table class="table table-sm table-bordered mb-3">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Description</th>
+                            <th class="text-end">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (invoice.Reservation?.ReservationServices != null)
+                        {
+                            foreach (var item in invoice.Reservation.ReservationServices)
+                            {
+                                <tr>
+                                    <td>@item.Service?.ServiceName</td>
+                                    <td class="text-end">1</td>
+                                    <td class="text-end">@item.Service?.Price?.ToString("C")</td>
+                                    <td class="text-end">@item.Service?.Price?.ToString("C")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="4" class="text-center text-muted">No items</td></tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-4">
+                        <table class="table table-borderless">
+                            <tr><td>Subtotal:</td><td class="text-end">@invoice.TotalAmount?.ToString("C")</td></tr>
+                            <tr><td>Tax:</td><td class="text-end">@invoice.TaxAmount?.ToString("C")</td></tr>
+                            <tr class="table-active fw-bold"><td>Total:</td><td class="text-end text-primary">@invoice.GrandTotal?.ToString("C")</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-4 no-print">
+            <button class="btn btn-success" onclick="window.print()">Print All</button>
+        </div>
+    </div>
+<style>
+    .invoice-box {
+        background: #fff;
+        padding: 30px;
+        margin: 30px 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        page-break-after: always;
+    }
+
+    .invoice-title {
+        color: #0d6efd;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+</style> *@

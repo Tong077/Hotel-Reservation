@@ -1,0 +1,139 @@
+﻿@using H_application.DTOs.RoomDto
+@model (List<RoomResponse> Rooms, List<int>? SelectedRoomIds)
+
+<div class="row g-3">
+    @foreach (var room in Model.Rooms)
+    {
+        var isSelected = Model.SelectedRoomIds?.Contains(room.RoomId) ?? false;
+        var cardClass = room.Status!.ToUpper() switch
+        {
+            "AVAILABLE" => "bg-success",
+            "CLEANING" => "bg-warning",
+            "RESERVED" => "bg-info",
+            "MAINTENANCE" => "bg-secondary",
+            "OCCUPIED" => "bg-danger",
+            _ => "bg-light"
+        };
+
+        <div class="col-12 col-sm-6 col-md-2">
+            <div class="card room-card @cardClass @(isSelected ? "selected" : "")"
+                 style="cursor:pointer;"
+                 data-roomid="@room.RoomId">
+                <div class="card-body p-3 text-room">
+                    <div class="room-number">Room #: @room.RoomNumber</div>
+                    <div class="room-type">Type: @room.RoomTypeName</div>
+                    <div class="room-status">@room.Status</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<style>
+    .text-room {
+        color: white;
+    }
+
+    .room-card.selected {
+        border: 3px solid #ffd700;
+    }
+
+    .text-room {
+        color: white;
+    }
+
+    .room-card.selected {
+        border: 3px solid #ffd700;
+    }
+</style>
+
+
+<script>
+       document.addEventListener("DOMContentLoaded", function() {
+        const cards = document.querySelectorAll(".room-card");
+        const select = document.getElementById("RoomIdSelect");
+        const container = document.getElementById("SelectedRoomsContainer");
+
+        function updateDisplay() {
+            container.innerHTML = "";
+            const selectedOptions = Array.from(select.selectedOptions);
+
+            selectedOptions.forEach(option => {
+                const roomDiv = document.createElement("div");
+                roomDiv.classList.add("multi-select-tag");
+                roomDiv.style.display = "flex";
+                roomDiv.style.alignItems = "center";
+                roomDiv.style.backgroundColor = "#17a2b8";
+                roomDiv.style.color = "white";
+                roomDiv.style.padding = "0.25rem 0.5rem";
+                roomDiv.style.margin = "2px";
+                roomDiv.style.borderRadius = "0.25rem";
+                roomDiv.style.fontSize = "0.85rem";
+
+                roomDiv.textContent = option.text;
+
+                const btn = document.createElement("button");
+                btn.textContent = "x";
+                btn.style.background = "transparent";
+                btn.style.border = "none";
+                btn.style.color = "white";
+                btn.style.marginLeft = "0.3rem";
+                btn.style.cursor = "pointer";
+                btn.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    option.selected = false; // Remove from select
+                    // Remove from cards
+                    const card = Array.from(cards).find(c => c.getAttribute("data-roomid") === option.value);
+                    if (card) card.classList.remove("selected");
+                    updateDisplay(); // Refresh display
+                });
+
+                roomDiv.appendChild(btn);
+                container.appendChild(roomDiv);
+            });
+        }
+
+        // Click on room card → toggle selection
+        cards.forEach(card => {
+            const roomId = card.getAttribute("data-roomid");
+            const option = Array.from(select.options).find(o => o.value === roomId);
+
+            // ✅ Initialize selection state based on select
+            if (option && option.selected) {
+                card.classList.add("selected");
+            }
+
+            card.addEventListener("click", function() {
+                if (card.classList.contains("selected")) {
+                    card.classList.remove("selected");
+                    if (option) option.selected = false;
+                } else {
+                    card.classList.add("selected");
+                    if (option) option.selected = true;
+                }
+
+                updateDisplay();
+            });
+        });
+
+        // Select change → update cards & display
+        select.addEventListener("change", function() {
+            const selectedIds = Array.from(select.selectedOptions).map(o => o.value);
+            cards.forEach(card => {
+                const roomId = card.getAttribute("data-roomid");
+                if (selectedIds.includes(roomId)) {
+                    card.classList.add("selected");
+                } else {
+                    card.classList.remove("selected");
+                }
+            });
+
+            updateDisplay();
+        });
+
+        // Initialize display
+        updateDisplay();
+    });
+
+</script>

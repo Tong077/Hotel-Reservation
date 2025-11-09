@@ -1,0 +1,226 @@
+﻿@using H_application.DTOs.Payment
+@model PaymentDtoUpdate
+@{
+    ViewData["Title"] = "Payment";
+}
+@if (TempData["ModelStateErrors"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Errors:</strong> @TempData["ModelStateErrors"]
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Update Payment Information</h4>
+
+        <form asp-controller="Payment" asp-action="Update" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PaymentId" />
+
+            <div class="form-row">
+                <!-- Reservation Dropdown -->
+                <div class="form-group col-sm-6">
+                    <label for="ReservationIds">Reservations</label>
+                    <div class="custom-dropdown w-100">
+                        <div class="form-control dropdown-display text-truncate" id="dropdownButton" onclick="toggleDropdown()">
+                            Select reservations
+                        </div>
+                        <div class="dropdown-list border bg-white shadow-sm d-none" id="dropdownList">
+                            @foreach (var r in ViewBag.Reservations)
+                            {
+                                var isChecked = ViewBag.SelectedReservationIds.Contains(r.ReservationId) ? "checked" : "";
+                                <div class="dropdown-item">
+                                    <input type="checkbox"
+                                           value="@r.ReservationId"
+                                           class="reservation-checkbox"
+                                           data-amount="@r.TotalPrice"
+                                           id="res_@r.ReservationId"
+                                           @isChecked />
+                                    <label for="res_@r.ReservationId">
+                                        @($"Guest: {r.GuestFullName} | Room: {r.RoomNumber} | Total: {r.DisplayTotal}")
+                                    </label>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    <small class="text-muted">Click to select one or more reservations.</small>
+                    @for (int i = 0; i < Model.ReservationId?.Count; i++)
+                    {
+                        <input type="hidden" name="ReservationId" value="@Model.ReservationId[i]" />
+                    }
+                    <div id="ReservationIdsContainer"></div>
+
+                </div>
+
+                <!-- Amount -->
+                <div class="form-group col-sm-6">
+                    <label asp-for="Amount" class="control-label">Total Amount</label>
+                    <input asp-for="Amount" class="form-control" id="AmountInput" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+                    <label asp-for="PaymentMethodId">Payment Method</label>
+                    <select asp-for="PaymentMethodId" asp-items="@ViewBag.PaymentMethods" class="form-control">
+                        <option value="">Select Payment Method</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                    <label asp-for="Currency">Currency</label>
+                    <select asp-for="Currency" class="form-control">
+                        <option value="KHR">KHR</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="RefundAmount" class="text-danger"></span>
+                    <label asp-for="RefundAmount">Refund Amount</label>
+                    <input asp-for="RefundAmount" class="form-control" placeholder="Refund Amount" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-4">
+                    <label asp-for="PaymentDate">Payment Date</label>
+                    <input asp-for="PaymentDate" type="datetime-local" class="form-control" />
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <label asp-for="RefundDate">Refund Date</label>
+                    <input asp-for="RefundDate" type="date" class="form-control" />
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <label asp-for="PaymentStatus">Payment Status</label>
+                    <select asp-for="PaymentStatus" class="form-control" id="PaymentStatusSelect">
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save Change</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+         const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownList = document.getElementById('dropdownList');
+    const amountInput = document.getElementById('AmountInput');
+    const form = document.querySelector('form');
+
+    // Update hidden inputs, total, and display
+    function updateSelection() {
+        const selectedItems = [];
+        const selectedIds = [];
+        let total = 0;
+
+        // Remove old hidden inputs
+        document.querySelectorAll('input[name="ReservationId"]').forEach(h => h.remove());
+
+        document.querySelectorAll('.reservation-checkbox:checked').forEach(chk => {
+            selectedIds.push(chk.value);
+            total += parseFloat(chk.dataset.amount) || 0;
+            selectedItems.push(chk.nextElementSibling.innerText);
+
+            // Add new hidden input for model binding
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ReservationId';
+            input.value = chk.value;
+            form.appendChild(input);
+        });
+
+        amountInput.value = total.toFixed(2);
+        dropdownButton.textContent = selectedItems.length ? selectedItems.join(", ") : "Select reservations";
+    }
+
+    // Initialize pre-selected reservations on page load
+    function initializeSelection() {
+        document.querySelectorAll('.reservation-checkbox').forEach(cb => {
+            if (cb.checked) {
+                updateSelection(); // make sure total and display are correct
+            }
+        });
+    }
+
+    // Event listeners
+    document.querySelectorAll('.reservation-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateSelection);
+    });
+
+    // Toggle dropdown
+    function toggleDropdown() {
+        dropdownList.classList.toggle('d-none');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!document.querySelector('.custom-dropdown').contains(e.target)) {
+            dropdownList.classList.add('d-none');
+        }
+    });
+
+    // Completed payment warning
+    const paymentSelect = document.getElementById('PaymentStatusSelect');
+    paymentSelect.addEventListener("change", function () {
+        if (this.value === "Completed") {
+            toastr.warning("Completed payments cannot be modified.");
+        }
+    });
+
+    // Initialize selection on page load
+    initializeSelection();
+
+
+</script>
+
+<style>
+    .custom-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .dropdown-display {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .dropdown-list {
+        position: absolute;
+        width: 100%;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 1000;
+        border-radius: 0.25rem;
+    }
+
+    .dropdown-item {
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>

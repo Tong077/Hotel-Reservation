@@ -1,0 +1,81 @@
+﻿@using H_application.DTOs.RoomDto
+@model RoomDtoCreate
+@{
+    ViewData["Title"] = "Room";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Add New Room Information</h4>
+        <form asp-controller="Room" asp-action="Store" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                    <label asp-for="RoomNumber" class="control-label">Room Number</label>
+                    <input asp-for="RoomNumber" type="text" placeholder="Room Number" class="form-control" />
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="RoomTypeId" class="text-danger"></span>
+                    <label asp-for="RoomTypeId" class="control-label">Room Type</label>
+                    <select asp-for="RoomTypeId" asp-items="@ViewBag.RoomType" class="form-control">
+                        <option>Please Select Room type</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="HotelId" class="text-danger"></span>
+                    <label asp-for="HotelId" class="control-label">Hotel Name</label>
+                    <select asp-for="HotelId" asp-items="@ViewBag.Hotels" class="form-control">
+                        <option>Please Select The Hotel Name</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control">
+                        <option>Please Select Status</option>
+                        <option value="Available">Available</option>
+                        <option value="Occupied">Occupied</option>
+                        <option value="Reserved">Reserved</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Cleaning">Cleaning</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Upload</span>
+                        </div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="file" multiple accept=".jpg,.jpeg,.png,.gif">
+                            <label class="custom-file-label" for="Images">Choose files</label>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input')
+        .addEventListener('change', function (e) {
+            let files = Array.from(e.target.files).map(f => f.name).join(', ');
+            e.target.nextElementSibling.innerText = files || "Choose files";
+        });
+</script>

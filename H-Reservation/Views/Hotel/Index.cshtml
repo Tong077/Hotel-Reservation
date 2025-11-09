@@ -1,0 +1,71 @@
+﻿@using H_application.DTOs.HotelDto
+@model IEnumerable<HotelResponse>
+<partial name="_style" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Hotel Information</h4>
+        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+                       
+                        <th>
+                           Hotel Name
+                        </th>
+                        <th>
+                            City
+                        </th>
+                        <th>
+                            Email
+                        </th>
+                        <th>
+                            Phone
+                        </th>
+                        <th>
+                            Address
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            
+                            <td>
+                                @Html.DisplayFor(items => item.Name)
+                            </td>
+                           
+                            <td>
+                                @Html.DisplayFor(items => item.City)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Phone)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Address)
+                            </td>
+                            <td>
+                                <a asp-controller="Hotel" asp-action="Edit" asp-route-id="@item.HotelId" class="mr-2">
+                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                </a>
+                                <a asp-controller="Hotel" asp-action="Delete" asp-route-id="@item.HotelId">
+                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                </a>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+﻿@using H_application.DTOs.ReservationDto
+@model ReservationDtoUpdate
+@using H_application.DTOs.RoomDto
+@using H_application.DTOs
+@{
+    ViewData["Title"] = "Reservation";
+}
+<div class="card">
+    <div class="card-header" style="padding: 0;">
+        <div style="max-height: 400px; overflow-y: auto; padding: 1rem; max-width: 95%; margin: 0 auto;">
+            @{
+                var roomsModel = (
+                (ViewBag.RoomsList as List<RoomResponse>) ?? new List<RoomResponse>(),
+                (ViewBag.SelectedRoomIds as List<int>) ?? new List<int>()
+                );
+            }
+            <partial name="GetRoomStatusRoom" model="roomsModel" />
+        </div>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Update Reservation Information</h4>
+        <form asp-controller="Reservation" asp-action="Update" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="ReservationId" type="hidden" />
+
+            <div class="form-row">
+                <!-- Guest Name -->
+                <div class="form-group col-sm-6">
+                    <label asp-for="GuestId" class="control-label">Guest Name</label>
+                    <span asp-validation-for="GuestId" class="text-danger"></span>
+                    <select asp-for="GuestId" asp-items="@ViewBag.Guests" class="form-control">
+                        <option value="">Please Select Guest Name</option>
+                    </select>
+                </div>
+
+                <!-- Selected Rooms -->
+                <div class="form-group col-sm-6">
+                    <label asp-for="RoomId" class="control-label">Selected rooms will appear here</label>
+                    <span asp-validation-for="RoomId" class="text-danger"></span>
+
+                    <!-- Hidden multi-select to bind selected rooms -->
+                    <select id="RoomIdSelect" name="RoomId" multiple hidden asp-for="RoomId" asp-items="@ViewBag.Rooms"></select>
+
+                    <!-- Selected Rooms display -->
+                    <div id="SelectedRoomsContainer" class="form-control"
+                         style="min-height:40px; border:1px solid #ced4da; border-radius:0.25rem; padding:0.25rem; background-color:white; display:flex; flex-wrap:wrap;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                    <label asp-for="TotalPrice" class="control-label">Total Price</label>
+                    <input asp-for="TotalPrice" type="text" placeholder="Total Price" class="form-control" />
+
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                    <label asp-for="Currency" class="control-label">Currency</label>
+                    <select asp-for="Currency" class="form-control">
+                        <option value="KHR">KHR</option>
+                        <option value="USD">USD</option>
+                    </select>
+
+
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <label asp-for="CheckInDate" class="control-label">Check-In Date</label>
+                    <input asp-for="CheckInDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <label asp-for="CheckOutDate" class="control-label">Check-Out Date</label>
+                    <input asp-for="CheckOutDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                </div>
+
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-sm-12">
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="CheckedIn">CheckedIn</option>
+                        <option value="CheckedOut">CheckedOut</option>
+                        <option value="Cancelled">Cancelled</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save Change</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>

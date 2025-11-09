@@ -1,0 +1,107 @@
+﻿
+@using H_application.DTOs.HousekeepingDto
+@model IEnumerable<HousekeepingRresponse>
+<partial name="_style" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">HouseKeeping Information</h4>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Create" class="btn btn-sm btn-success">
+                <i class="fa-solid fa-square-plus"></i>
+            </a>
+
+
+            <form id="bulkStatusForm" asp-action="BulkUpdateStatus" asp-controller="Housekeeping" method="post" class="form-inline">
+                <button type="submit" class="btn btn-sm btn-info">
+                    Click Apply Status Change
+                </button>
+                <select name="status" class="form-control form-control-sm ml-2" required>
+
+                    <option value="">Select status...</option>
+                    <option value="Available">Available</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Cleaning">Cleaning</option>
+                </select>
+
+                
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>
+                            Employee Name
+                        </th>
+                        <th>
+                            Room Number
+                        </th>
+                        <th>
+                            Last Clean Date
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Note
+                        </th>
+                       
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedRoomIds" value="@item.HousekeepingId" form="bulkStatusForm" />
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.EmployeeName)
+                            </td>
+                            <td>
+                                @($"{item.RoomNumber} - {item.RoomTypeName}")
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.LastCleanedDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Status)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.Notes)
+                            </td>
+                           
+                            <td>
+                                <a asp-controller="Housekeeping" asp-action="Edit" asp-route-Id="@item.HousekeepingId" class="mr-2">
+                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                </a>
+
+                                <a asp-controller="Housekeeping" asp-action="Delete" asp-route-Id="@item.HousekeepingId">
+                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                </a>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const selectAll = document.getElementById("selectAll");
+       selectAll.addEventListener("change", function () {
+           const checkboxes = document.querySelectorAll('input[name="selectedRoomIds"]');
+           checkboxes.forEach(cb => cb.checked = this.checked);
+       });
+</script>

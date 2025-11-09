@@ -1,0 +1,84 @@
+﻿@using H_application.DTOs.EmployeesDto
+@model IEnumerable<EmployeeResponse>
+<partial name="_style" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">SystemSetting Information</h4>
+        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+
+                        <th>
+                            FullName
+                        </th>
+                        <th>
+                            Email
+                        </th>
+                        <th>
+                            Phone
+                        </th>
+                        <th>
+                            Role
+                        </th>
+                        <th>
+                            ShiftTime
+                        </th>
+                        <td>
+                            HireDate
+                        </td>
+                        <td>
+                            Status
+                        </td>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @Html.DisplayFor(items => item.FullName)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Phone)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Role)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.ShiftTime)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.HireDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Status)
+                            </td>
+                            <td>
+                                <a asp-controller="Employees" asp-action="Edit" asp-route-Id="@item.EmployeeId" class="mr-2">
+                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                </a>
+                                <a asp-controller="Employees" asp-action="Delete" asp-route-Id="@item.EmployeeId">
+                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                </a>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

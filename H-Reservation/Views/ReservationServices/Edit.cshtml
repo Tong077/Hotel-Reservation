@@ -1,0 +1,55 @@
+﻿@using H_application.DTOs.ReservationServicesDto
+
+@model ReservationServicesDtoUpdate
+
+@{
+    ViewData["Title"] = "Reservation Services";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Update Reservation Services Information</h4>
+        <form asp-controller="ReservationServices" asp-action="Update" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="ReservationServiceId" type="hidden" />
+
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="ReservationId" class="text-danger"></span>
+                    <label asp-for="ReservationId" class="control-label">Guest Name</label>
+                    <select asp-for="ReservationId" asp-items="@ViewBag.Reservation" class="form-control">
+                        <option>Please Select Guest Name</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="ServiceId" class="text-danger"></span>
+                    <label asp-for="ServiceId" class="control-label">Service Name</label>
+                    <select asp-for="ServiceId" asp-items="@ViewBag.Service" class="form-control">
+                        <option>Please Select Service Name</option>
+                    </select>
+                </div>
+
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                    <label asp-for="Quantity" class="control-label">Quantity</label>
+                    <input asp-for="Quantity" type="text" placeholder="Quantity" class="form-control" />
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="TotalPrice" class="text-danger"></span>
+                    <label asp-for="TotalPrice" class="control-label">TotalPrice</label>
+                    <input asp-for="TotalPrice" type="text" placeholder="TotalPrice" class="form-control" />
+                </div>
+
+
+            </div>
+
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save Change</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>

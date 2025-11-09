@@ -1,0 +1,112 @@
+﻿@using H_application.DTOs.Payment
+@model IEnumerable<PaymentResponse>
+<partial name="_style" />
+<partial name="GetTotalRevenue" />
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Payment Information</h4>
+        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            Payment Method
+                        </th>
+                        <th>
+                            Guest Room Info
+                        </th>
+                      
+                        <th>
+                            Amount
+                        </th>
+                        <th>
+                            Currency
+                        </th>
+                        
+                        <th>
+                            PaymentDate
+                        </th>
+                        <th>
+                            Refund Amount
+                        </th>
+                        <th>
+                            Refund Date
+                        </th>
+                        <th>
+                            PaymentStatus
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            
+                            <td>
+                                @Html.DisplayFor(items => item.PaymentMethodName)
+                            </td>
+                            <td style="color: green">
+                                @Html.DisplayFor(items => item.GuestRoomInfo)
+                            </td>
+                           
+                            <td>
+                                @if(item.Currency == "USD")
+                                {
+                                    @("$" + String.Format("{0:N2}", item.Amount))
+                                }
+                                else if (item.Currency == "KHR")
+                                {
+                                    @($"{item.Amount:N2} ៛")
+
+                                }
+                                else
+                                {
+                                   @item.Amount
+                                }                     
+    
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Currency)
+                            </td>
+                            <td>@(item.PaymentDate?.ToString(("yyyy-MM-dd hh:mm")))</td>
+                            <td>
+                                @Html.DisplayFor(items => item.RefundAmount)
+                            </td>
+                            <td>
+                                @(item.RefundDate?.ToString(("yyyy-MM-dd hh:mm")))
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.PaymentStatus)
+                            </td>
+                            <td>
+                                @if (item.PaymentStatus == "Pending")
+                                {
+                                    <a asp-controller="Payment" asp-action="Edit" asp-route-id="@item.PaymentId" class="mr-2">
+                                        <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                    </a>
+                                    <a asp-controller="Payment" asp-action="Delete" asp-route-id="@item.PaymentId">
+                                        <i class="fa-solid fa-trash icon-delete"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-pen-nib icon-edit mr-2" title="Cannot edit completed payment" style="cursor: not-allowed;"></i>
+                                    <i class="fa-solid fa-trash icon-delete" title="Cannot delete completed payment" style="cursor: not-allowed;"></i>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

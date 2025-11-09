@@ -1,0 +1,201 @@
+﻿@using H_application.DTOs.Payment
+@model PaymentDtoCreate
+@{
+    ViewData["Title"] = "Payment";
+}
+@if (TempData["ModelStateErrors"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Errors:</strong> @TempData["ModelStateErrors"]
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Add New Payment Information</h4>
+
+        <form asp-controller="Payment" asp-action="Store" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <!-- Reservation Dropdown -->
+                <div class="form-group col-sm-6">
+                    <label for="ReservationIds">Reservations</label>
+                    <div class="custom-dropdown w-100">
+                        <div class="form-control dropdown-display text-truncate" id="dropdownButton" onclick="toggleDropdown()">
+                            Select reservations
+                        </div>
+                        <div class="dropdown-list border bg-white shadow-sm d-none" id="dropdownList">
+                            @foreach (var r in ViewBag.Reservations)
+                            {
+                                <div class="dropdown-item">
+                                    <input type="checkbox" value="@r.ReservationId"
+                                           data-amount="@r.TotalAmount"
+                                           class="reservation-checkbox"
+                                           id="res_@r.ReservationId" />
+                                    <label for="res_@r.ReservationId">
+                                        @($"Guest: {r.GuestFullName} | Room: {r.RoomNumber} | Total: {r.DisplayTotal}")
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <small class="text-muted">Click to select one or more reservations.</small>
+                    <div id="ReservationIdsContainer"></div>
+                </div>
+
+                <!-- Amount -->
+                <div class="form-group col-sm-6">
+                    <label asp-for="Amount" class="control-label">Total Amount</label>
+                    <input asp-for="Amount" class="form-control" id="AmountInput" readonly />
+                </div>
+            </div>
+
+            <!-- Other form fields -->
+            <div class="form-row">
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+                    <label asp-for="PaymentMethodId">Payment Method</label>
+                    <select asp-for="PaymentMethodId" asp-items="@ViewBag.PaymentMethods" class="form-control">
+                        <option value="">Select Payment Method</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                    <label asp-for="Currency">Currency</label>
+                    <select asp-for="Currency" class="form-control">
+                        <option value="KHR">KHR</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <span asp-validation-for="RefundAmount" class="text-danger"></span>
+                    <label asp-for="RefundAmount">Refund Amount</label>
+                    <input asp-for="RefundAmount" class="form-control" placeholder="Refund Amount" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-sm-4">
+                    <label asp-for="PaymentDate">Payment Date</label>
+                    <input asp-for="PaymentDate" type="datetime-local" class="form-control" />
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <label asp-for="RefundDate">Refund Date</label>
+                    <input asp-for="RefundDate" type="date" class="form-control" />
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <label asp-for="PaymentStatus">Payment Status</label>
+                    <select asp-for="PaymentStatus" class="form-control" id="PaymentStatusSelect">
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownList = document.getElementById('dropdownList');
+    const reservationCheckboxes = document.querySelectorAll('.reservation-checkbox');
+    const containerHidden = document.getElementById('ReservationIdsContainer');
+    const amountInput = document.getElementById('AmountInput');
+
+    function toggleDropdown() {
+        dropdownList.classList.toggle('d-none');
+    }
+
+    function updateSelectedReservations() {
+        const selectedItems = [];
+        let total = 0;
+        containerHidden.innerHTML = '';
+
+        document.querySelectorAll('.reservation-checkbox:checked').forEach(chk => {
+            const amount = parseFloat(chk.dataset.amount) || 0;
+            total += amount;
+            selectedItems.push(chk.nextElementSibling.innerText);
+
+            // Reservation ID
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'ReservationId';
+            inputId.value = chk.value;
+            containerHidden.appendChild(inputId);
+
+            // Reservation Amount
+            const inputAmount = document.createElement('input');
+            inputAmount.type = 'hidden';
+            inputAmount.name = 'ReservationAmount';
+            inputAmount.value = amount;
+            containerHidden.appendChild(inputAmount);
+        });
+
+        amountInput.value = total.toFixed(2);
+        dropdownButton.textContent = selectedItems.length ? selectedItems.join(", ") : "Select reservations";
+    }
+
+    reservationCheckboxes.forEach(cb => cb.addEventListener('change', updateSelectedReservations));
+
+    document.addEventListener('click', function (e) {
+        if (!document.querySelector('.custom-dropdown').contains(e.target)) {
+            dropdownList.classList.add('d-none');
+        }
+    });
+
+    const paymentSelect = document.getElementById('PaymentStatusSelect');
+    paymentSelect.addEventListener("change", function () {
+        if (this.value === "Completed") {
+            toastr.warning("Completed payments cannot be modified.");
+        }
+    });
+</script>
+
+<style>
+    .custom-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .dropdown-display {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .dropdown-list {
+        position: absolute;
+        width: 100%;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 1000;
+        border-radius: 0.25rem;
+    }
+
+    .dropdown-item {
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+</style>

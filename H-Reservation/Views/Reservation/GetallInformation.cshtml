@@ -1,0 +1,54 @@
+﻿<div class="row g-5 mb-4">
+
+    <!-- Card 1: Total Reservations -->
+    <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card kpi-card shadow-lg border-0 h-100">
+            <div class="card-body p-4">
+                <p class="text-sm font-weight-medium text-secondary mb-1">Total Reservations</p>
+                <div class="d-flex justify-content-between align-items-end">
+                    <span class="display-4 fw-bolder text-dark">
+                        @ViewBag.TotalReservations
+                    </span>
+                    <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1">
+                        @ViewBag.GrowthPercentage% vs last month
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Confirmed & Active -->
+    <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card kpi-card shadow-lg border-0 h-100">
+            <div class="card-body p-4">
+                <p class="text-sm font-weight-medium text-secondary mb-1">Confirmed & Active</p>
+                <div class="d-flex justify-content-between align-items-end">
+                    <span class="display-4 fw-bolder text-dark">
+                        @ViewBag.Confirm
+                    </span>
+                    <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">
+                        @ViewBag.Checkin Today's Check-ins
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Pending Approval -->
+    <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card kpi-card shadow-lg border-0 h-100">
+            <div class="card-body p-4">
+                <p class="text-sm font-weight-medium text-secondary mb-1">Pending Approval</p>
+                <div class="d-flex justify-content-between align-items-end">
+                    <span class="display-4 fw-bolder text-dark">
+                        @ViewBag.Pending
+                    </span>
+                    <span class="badge bg-warning-subtle text-warning fw-semibold px-2 py-1">
+                        Requires attention
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,99 @@
+﻿@using H_application.DTOs.ReservationServicesDto
+@using H_application.DTOs.ServicesDto
+@model IEnumerable<ReservationServicesResponse>
+<partial name="_style" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Reservation Service Information</h4>
+
+
+        <a asp-action="Create" class="btn btn-sm btn-success">
+            <i class="fa-solid fa-square-plus"></i>
+        </a>
+
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+
+                        <th>
+                            FirstName
+                        </th>
+                        <th>Last Name</th>
+                        <th>
+                            RoomNumber
+                        </th>
+                        <th>
+                            RoomTypeName
+                        </th>
+                        <th>
+                            Service Name
+                        </th>
+                        <th>
+                            Quantity
+                        </th>
+                        <th>
+                            CheckIn
+                        </th>
+                        <th>
+                            CheckOut
+                        </th>
+                        <th>
+                            BasePrice
+                        </th>
+                        <th>Total Price</th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.FirstName
+                            </td>
+                            <td>
+                                @item.LastName
+                            </td>
+                            <td>
+                                @item.RoomNumber
+                            </td>
+                            <td>
+                                @item.RoomTypeName
+                            </td>
+                            <td>
+                                @item.ServiceName - $@(item.ServicePrice)
+                            </td>
+
+                            <td>
+                                @item.Quantity
+                            </td>
+                            <td>@item.CheckIn?.ToString("yyyy-MM-dd hh:mm")</td>
+                            <td>@item.CheckOut?.ToString("yyyy-MM-dd hh:mm")</td>
+                            <td>
+                                @item.BasePrice
+                            </td>
+                            <td>@item.TotalPrice</td>
+
+                            <td>
+                                <a asp-controller="ReservationServices" asp-action="Edit" asp-route-Id="@item.ReservationServiceId" class="mr-2">
+                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                </a>
+
+                                <a asp-controller="ReservationServices" asp-action="Delete" asp-route-Id="@item.ReservationServiceId">
+                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                </a>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

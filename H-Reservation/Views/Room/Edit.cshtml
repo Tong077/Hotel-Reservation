@@ -1,0 +1,125 @@
+﻿@using H_application.DTOs.RoomDto
+@model RoomDtoUpdate
+@{
+    ViewData["Title"] = "Room";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Update Room Information</h4>
+        <form asp-controller="Room" asp-action="Update" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="RoomId" />
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                    <label asp-for="RoomNumber" class="control-label">Room Number</label>
+                    <input asp-for="RoomNumber" type="text" placeholder="Room Number" class="form-control" readonly />
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="RoomTypeId" class="text-danger"></span>
+                    <label asp-for="RoomTypeId" class="control-label">Room Type</label>
+                    <select asp-for="RoomTypeId" asp-items="@ViewBag.RoomType" class="form-control">
+                        <option value="">Please Select Room type</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="HotelId" class="text-danger"></span>
+                    <label asp-for="HotelId" class="control-label">Hotel Name</label>
+                    <select asp-for="HotelId" asp-items="@ViewBag.Hotels" class="form-control">
+                        <option value="">Please Select The Hotel Name</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                    <label asp-for="Status" class="control-label">Status</label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="">Please Select Status</option>
+                        <option value="Available">Available</option>
+                        <option value="Occupied">Occupied</option>
+                        <option value="Reserved">Reserved</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Cleaning">Cleaning</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Upload New Images</span>
+                        </div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="file" multiple accept=".jpg,.jpeg,.png,.gif">
+                            <label class="custom-file-label" for="Images">Choose files</label>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Images" class="text-danger"></span>
+                    <small class="form-text text-muted">Upload additional images or replace specific ones below.</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <h5>Existing Images @(Model.Images?.Split(',').Length ?? 0) Images</h5>
+                    @if (!string.IsNullOrEmpty(Model.Images))
+                    {
+                        var images = Model.Images.Split(',');
+                        <div class="row">
+                            @for (int i = 0; i < images.Length; i++)
+                            {
+                                var img = images[i];
+                                if (!string.IsNullOrEmpty(img))
+                                {
+                                    <div class="col-md-3 mb-3">
+                                        <div class="image-container">
+                                            <img src="~/images/rooms/@img" class="img-thumbnail" style="width:150px;height:150px;object-fit:cover;" />
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox" name="removeImage" value="@img" class="form-check-input" id="removeImage_@i" />
+                                                <label class="form-check-label" for="removeImage_@i">Remove</label>
+                                            </div>
+                                            <div class="mt-2">
+                                                <input type="file" class="form-control-file" name="replaceImage_@i" accept=".jpg,.jpeg,.png,.gif" />
+                                                <small class="form-text text-muted">Replace this image</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <h4 class="card-title">No images available for this room.</h4>
+                    }
+                </div>
+            </div>
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save Change</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input')
+        .addEventListener('change', function (e) {
+            let files = Array.from(e.target.files).map(f => f.name).join(', ');
+            e.target.nextElementSibling.innerText = files || "Choose files";
+        });
+
+    // Optional: Clear replace input if remove is checked
+    document.querySelectorAll('input[name="removeImage"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function (e) {
+            const replaceInput = this.parentElement.nextElementSibling.querySelector('input[type="file"]');
+            if (this.checked) {
+                replaceInput.value = ''; // Clear the file input if removing
+                replaceInput.disabled = true; // Disable replacement if removing
+            } else {
+                replaceInput.disabled = false; // Re-enable if not removing
+            }
+        });
+    });
+</script>

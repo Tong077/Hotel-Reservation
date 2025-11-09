@@ -1,0 +1,48 @@
+﻿@using H_application.DTOs.InvoicesDto
+@model IEnumerable<InvoicesResponse>
+
+@{
+    ViewData["Title"] = "Invoice";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Invoice</h4>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+                        <th>Invoice ID</th>
+                        <th>Guest</th>
+                        <th>Total</th>
+                        <th>Tax</th>
+                        <th>Grand Total</th>
+                        <th>Issued Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr>
+                            <td>@i.InvoiceId</td>
+                            <td>@i.GuestName</td>
+                            <td>@i.TotalAmount</td>
+                            <td>@i.TaxAmount</td>
+                            <td>@i.GrandTotal</td>
+                            <td>@i.IssuedDate?.ToShortDateString()</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@i.InvoiceId" class="btn btn-primary btn-sm">View</a>
+                                <a asp-action="Print" asp-route-id="@i.InvoiceId" class="btn btn-success btn-sm">Print</a>
+                                <input class="ml-3" type="checkbox" name="invoiceIds" value="@i.InvoiceId" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <form method="post" asp-action="PrintMultiple">
+                <button type="submit" class="btn btn-sm btn-success">Print Selected</button>
+            </form>
+
+        </div>
+    </div>
+</div>

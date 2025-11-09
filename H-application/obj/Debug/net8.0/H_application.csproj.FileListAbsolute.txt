@@ -1,0 +1,17 @@
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.csproj.AssemblyReference.cache
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.AssemblyInfoInputs.cache
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.AssemblyInfo.cs
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.csproj.CoreCompileInputs.cache
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Application.deps.json
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Application.runtimeconfig.json
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Application.dll
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Application.pdb
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Domain.dll
+D:\Asp_net\H-Reservation\H-application\bin\Debug\net8.0\H_Domain.pdb
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Applic.B24D5383.Up2Date
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.dll
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\refint\H_Application.dll
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.pdb
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.genruntimeconfig.cache
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\ref\H_Application.dll

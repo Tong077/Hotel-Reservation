@@ -1,0 +1,87 @@
+﻿@using H_application.DTOs.RoomTypeDto
+
+@model IEnumerable<RoomTypeResponse>
+<partial name="_style" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Room Type Information</h4>
+        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+                        
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Price PerNight
+                        </th>
+                        <th>
+                            Currency
+                        </th>
+                        <th>
+                            Capacity
+                        </th>
+                        <th>
+                            Description
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            
+                            <td>
+                                @Html.DisplayFor(items => item.Name)
+                            </td>
+                            <td style="color: limegreen">
+                                @if (item.Currency == "USD")
+                                {
+                                    @($"{item.PricePerNight:N2} $")
+                                }
+                                else if (item.Currency == "KHR")
+                                {
+                                    @($"{item.PricePerNight:N2} ៛")
+
+                                }
+                                else
+                                {
+                                    @item.PricePerNight
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Currency)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Capacity)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(items => item.Description)
+                            </td>
+
+
+
+                            <td>
+                                <a asp-controller="RoomType" asp-action="Edit" asp-route-Id="@item.RoomTypeId" class="mr-2">
+                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                </a>
+                                <a asp-controller="RoomType" asp-action="Delete" asp-route-Id="@item.RoomTypeId">
+                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                </a>
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

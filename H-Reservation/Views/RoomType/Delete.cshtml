@@ -1,0 +1,55 @@
+﻿@using H_application.DTOs.RoomTypeDto
+@model RoomTypeDtoUpdate
+
+@{
+    ViewData["Title"] = "Room Type";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Delete Room Type Information</h4>
+        <form asp-controller="RoomType" asp-action="Destroy" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="RoomTypeId" type="hidden" />
+            <div class="form-row">
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Name" class="control-label">Room Type Name</label>
+                    <input asp-for="Name" type="text" placeholder="Room Type Name" class="form-control " />
+
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="PricePerNight" class="text-danger"></span>
+                    <label asp-for="PricePerNight" class="control-label">Price PerNight</label>
+                    <input asp-for="PricePerNight" type="text" placeholder="Price PerNight" class="form-control" />
+                </div>
+
+            </div>
+            <div class="form-row">
+
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                    <label asp-for="Capacity" class="control-label">Capacity</label>
+                    <input asp-for="Capacity" type="text" placeholder="Capacity" class="form-control" />
+                </div>
+                <div class="form-group col-sm-6">
+                    <span asp-validation-for="Currency" class="text-danger"></span>
+                    <label asp-for="Currency" class="control-label">Capacity</label>
+                    <select asp-for="Currency" type="text" class="form-control">
+                        <option value="KHR">KHR</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Description" class="control-label">Description</label>
+                <input asp-for="Description" type="text" placeholder="Description" class="form-control" />
+            </div>
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Delete</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+</div>

@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <title>Hotel Resers </title>
+    <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon.png">
+    <partial name="_css" />
+
+</head>
+<body style="height: 600px; overflow-y: auto;">
+    <div id="main-wrapper">
+        <div class="nav-header">
+            <a href="index.html" class="brand-logo">
+                <img class="logo-abbr" src="./images/logo.png" alt="">
+                <img class="logo-compact" src="./images/logo-text.png" alt="">
+                <img class="brand-title" src="./images/logo-text.png" alt="">
+            </a>
+            <div class="nav-control">
+                <div class="hamburger">
+                    <span class="line"></span><span class="line"></span><span class="line"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <partial name="_Nav" />
+        <partial name="_Side" />
+
+
+        <div class="content-body">
+            <div class="container-fluid mt-3">
+                @RenderBody()
+
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="copyright">
+            <p>Copyright & copy ; develop System By Tong<a href="https://themeforest.net/user/quixlab"> Using Templet Quixlab</a> 2018</p>
+        </div>
+    </div>
+
+    @RenderSection("Scripts", required: false)
+   <partial name="_script" />
+</body>
+</html>
+<script>
+      toastr.options = {
+        "closeButton": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "3000"
+    };
+
+    @if (TempData["toastr-type"] != null && TempData["toastr-message"] != null)
+    {
+                            <text>
+                                console.log("Toastr triggered: @TempData["toastr-type"] - @TempData["toastr-message"]");
+                                toastr["@TempData["toastr-type"]"]("@TempData["toastr-message"]");
+                            </text>
+    }
+</script>

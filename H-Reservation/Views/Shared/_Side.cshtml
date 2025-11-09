@@ -1,0 +1,115 @@
+﻿<div class="nk-sidebar">
+    <div class="nk-nav-scroll">
+        <ul class="metismenu" id="menu">
+
+            <a asp-controller="Gust" asp-action="Index" aria-expanded="false">
+                <i class="fa-solid fa-user-tie mr-2"></i><span class="nav-text">Guest</span>
+            </a>
+
+            <li>
+                <a asp-controller="Hotel" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-building mr-2"></i><span class="nav-text">Hotel</span>
+                </a>
+            </li>
+
+            <li class="mega-menu mega-menu-sm">
+                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                    <i class="fa-solid fa-bookmark mr-2"></i> <span class="nav-text">Reservation</span>
+                </a>
+                <ul aria-expanded="false">
+                    <a asp-controller="Reservation" asp-action="Index" aria-expanded="false">
+                       <span class="nav-text">Reservation</span>
+                    </a>
+                    <a asp-controller="ReservationServices" asp-action="Index" aria-expanded="false">
+                         <span class="nav-text">ReservationServices</span>
+                    </a>
+                </ul>
+            </li>
+            @* <li>
+                <a asp-controller="Reservation" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-bookmark mr-2"></i> <span class="nav-text">Reservation</span>
+                </a>
+            </li> *@
+            <li class="mega-menu mega-menu-sm">
+                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                    <i class="fa-solid fa-building-circle-arrow-right"></i><span class="nav-text">Room</span>
+                </a>
+                <ul aria-expanded="false">
+                    <a asp-controller="Room" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Room</span>
+                    </a>
+                    <a asp-controller="RoomType" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Room Type</span>
+                    </a>
+                </ul>
+            </li>
+            <li class="mega-menu mega-menu-sm">
+                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                    <i class="fa-solid fa-money-check-dollar mr-2"></i><span class="nav-text">Payment</span>
+                </a>
+                <ul aria-expanded="false">
+                    <a asp-controller="Payment" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Payment</span>
+                    </a>
+                    <a asp-controller="PaymentMethod" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Payment Method</span>
+                    </a>
+                </ul>
+            </li>
+            <li>
+                <a asp-controller="Housekeeping" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-pump-medical mr-2"></i> <span class="nav-text">Housekeeping</span>
+                </a>
+            </li>
+            
+            <li>
+                <a asp-controller="Employees" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-user-tie mr-2"></i> <span class="nav-text">Employees</span>
+                </a>
+            </li>
+
+            <li>
+                <a asp-controller="Services" asp-action="Index" aria-expanded="false">
+                    <i class="fa-brands fa-servicestack mr-2"></i> <span class="nav-text">Services</span>
+                </a>
+            </li>
+            @* <li>
+                <a asp-controller="BookingHistory" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-notes-medical mr-2"></i> <span class="nav-text">BookingHistory</span>
+                </a>
+            </li> *@
+
+            <li>
+                <a asp-controller="Invoices" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-file-lines mr-2"></i> <span class="nav-text">Invoices</span>
+                </a>
+            </li>
+            @* <li>
+                <a asp-controller="Reviews" asp-action="Index" aria-expanded="false">
+                    <i class="fa-solid fa-users-viewfinder mr-2"></i> <span class="nav-text">Reviews</span>
+                </a>
+            </li> *@
+
+
+
+           
+            <li class="mega-menu mega-menu-sm">
+                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                    <i class="fa-solid fa-gear mr-2"></i><span class="nav-text">Setting</span>
+                </a>
+                <ul aria-expanded="false">
+                    <a asp-controller="SystemSettings" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">System Settings</span>
+                    </a>
+                    <a asp-controller="PaymentMethod" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Payment Method</span>
+                    </a>
+                    <a asp-controller="PaymentMethod" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Payment Method (2)</span>
+                    </a>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+</div>

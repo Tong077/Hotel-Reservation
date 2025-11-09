@@ -1,0 +1,154 @@
+﻿@using H_application.DTOs.InvoicesDto
+@model InvoicesResponse
+
+
+<div class="container invoice-box">
+ 
+    <div class="invoice-header d-flex justify-content-between align-items-center border-bottom mb-4 pb-3">
+        <div>
+            <h1 class="invoice-title mb-1">INVOICE</h1>
+            <p class="text-muted mb-0">Reservation ID: <strong>@Model.ReservationId</strong></p>
+        </div>
+        <div class="text-end">
+            <p><strong>Issued Date:</strong> @Model.IssuedDate?.ToString("dd MMM yyyy")</p>
+            <p><strong>Invoice ID:</strong> #@Model.InvoiceId</p>
+        </div>
+    </div>
+
+    <!-- Billed From / Billed To -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h6 class="text-uppercase fw-bold text-secondary">Billed From</h6>
+            <p class="mb-1 fw-semibold">@Model.HotelName</p>
+            <p class="mb-1">@Model.StreetName</p>
+            <p class="mb-1">@Model.Address</p>
+        </div>
+
+        <div class="col-md-6 text-md-end">
+            <h6 class="text-uppercase fw-bold text-secondary">Billed To</h6>
+            <p class="mb-1 fw-semibold">@Model.GuestName</p>
+            <p class="mb-1">Room: @Model.RoomNumber</p>
+            <p class="mb-1">Check-in: @Model.CheckInDate?.ToString("dd MMM yyyy")</p>
+            <p class="mb-1">Check-out: @Model.CheckOutDate?.ToString("dd MMM yyyy")</p>
+        </div>
+    </div>
+
+    <!-- Service Table -->
+    <table class="table table-bordered align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>Description</th>
+                <th class="text-end">Qty</th>
+                <th class="text-end">Unit Price</th>
+                <th class="text-end">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Services != null && Model.Services.Any())
+            {
+                foreach (var item in Model.Services)
+                {
+                    <tr>
+                        <td>@item.ServiceName</td>
+                        <td class="text-end">@item.Quantity</td>
+                        <td class="text-end">@item.Price?.ToString("C")</td>
+                        <td class="text-end">@((item.Price ?? 0) * (item.Quantity ?? 0)).ToString("C")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No service items found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="row justify-content-end">
+        <div class="col-md-6">
+            <table class="table table-borderless">
+                <tr>
+                    <td class="text-end fw-semibold">Subtotal:</td>
+                    <td class="text-end fw-semibold">@Model.TotalAmount?.ToString("C")</td>
+                </tr>
+                <tr>
+                    <td class="text-end fw-semibold">Tax:</td>
+                    <td class="text-end fw-semibold">@Model.TaxAmount?.ToString("C")</td>
+                </tr>
+                <tr class="border-top">
+                    <td class="text-end fw-bold">Grand Total:</td>
+                    <td class="text-end fw-bold text-primary">@Model.GrandTotal?.ToString("C")</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+   
+    <div class="mt-4 border-top pt-3 text-center">
+        <p class="text-muted small mb-1">Thank you for your business!</p>
+        <p class="text-muted small">For billing inquiries, please contact our front desk or billing department.</p>
+    </div>
+
+    <!-- Print Button -->
+    <div class="text-end mt-3">
+        <button class="btn btn-success btn-sm" onclick="window.print()">
+            <i class="bi bi-printer"></i> Print Invoice
+        </button>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .invoice-box {
+        background: #fff;
+        padding: 40px;
+        margin: 40px auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-width: 900px;
+    }
+
+    .invoice-header {
+        border-bottom: 2px solid #0d6efd;
+    }
+
+    .invoice-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+
+    .table th {
+        background-color: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd !important;
+    }
+
+    media print {
+        body
+    {
+        background: white !important;
+    }
+
+    .btn {
+        display: none;
+    }
+
+    .invoice-box {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+    }
+
+    .invoice-title {
+        color: black !important;
+    }
+
+    }
+</style>

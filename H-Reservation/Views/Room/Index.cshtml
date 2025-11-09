@@ -1,0 +1,150 @@
+﻿@using H_application.DTOs.RoomDto
+@model IEnumerable<RoomResponse>
+<partial name="_style" />
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Room Information</h4>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Create" class="btn btn-sm btn-success">
+                <i class="fa-solid fa-square-plus"></i>
+            </a>
+
+           
+            <form id="bulkStatusForm" asp-action="BulkUpdateStatus" asp-controller="Room" method="post" class="form-inline">
+                <select name="status" class="form-control form-control-sm mr-2" required>
+                    <option value="">Select status...</option>
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Reserved">Reserved</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Cleaning">Cleaning</option>
+                </select>
+                <button type="submit" class="btn btn-success">
+                    Check Box and Click Apply
+                </button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover zero-configuration">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Room Number</th>
+                        <th>Room Type</th>
+                        <th>Room Price</th>
+                        <th>Hotel Name</th>
+                        <th>Images</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedRoomIds" value="@item.RoomId" form="bulkStatusForm" />
+                            </td>
+                            <td>@item.RoomNumber</td>
+                            <td>@item.RoomTypeName</td>
+                            <td>
+                                @if (item.RoomCurrency == "USD")
+                                {
+                                    <span>$@((item.RoomPrice ?? 0).ToString("F2"))</span>
+                                }
+                                else if (item.RoomCurrency == "KHR")
+                                {
+                                    <span>@Math.Round(item.RoomPrice ?? 0) Riel</span>
+                                }
+                                else
+                                {
+                                    <span>@item.RoomPrice @item.RoomCurrency</span>
+                                }
+                            </td>
+                            <td>@item.HotelName</td>
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(item.Images))
+                                        {
+                                            var images = item.Images.Split(',');
+
+                                            <div style="position: relative; display: inline-block;">
+                                                <a href="~/images/rooms/@images[0]" class="glightbox" data-gallery="room-@item.RoomId">
+                                                    <img src="~/images/rooms/@images[0]" class="img-thumbnail" style="width:40px;height:40px;object-fit:cover;" />
+                                                </a>
+
+                                                @if (images.Length > 1)
+                                                {
+                                                    <span style="
+                                                                    position: absolute;
+                                                                    top: -5px;
+                                                                    right: -5px;
+                                                                    background-color: #ff4d4d;
+                                                                    color: white;
+                                                                    font-size: 12px;
+                                                                    padding: 2px 6px;
+                                                                    border-radius: 50%;
+                                                                    font-weight: bold;
+                                                                    cursor: pointer;"
+                                                          title="This room has @images.Length images">
+                                                        @images.Length
+                                                    </span>
+                                                }
+                                            </div>
+
+                                            @for (int i = 1; i < images.Length; i++)
+                                            {
+                                                <a href="~/images/rooms/@images[i]" class="glightbox" data-gallery="room-@item.RoomId" style="display:none;"></a>
+                                            }
+                                        }
+                                    </td>
+
+                                    <td class="@(item.Status == "Available" ? "text-success" :
+                                                                                 item.Status == "Occupied" ? "text-danger" :
+                                                                                 item.Status == "Reserved" ? "text-info" :
+                                                                                 item.Status == "Maintenance" ? "text-secondary" :
+                                                                                 item.Status == "Cleaning" ? "text-warning" : "")">
+                                    @item.Status
+                                </td>
+
+                                    <td>
+                                        <a asp-controller="Room" asp-action="Edit" asp-route-id="@item.RoomId" class="mr-2">
+                                            <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                        </a>
+                                        <a asp-controller="Room" asp-action="Delete" asp-route-id="@item.RoomId">
+                                            <i class="fa-solid fa-trash icon-delete"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                              
+                        }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- GLightbox + Select All Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            zoomable: true,
+            closeButton: true,
+            keyboardNavigation: true,
+            openEffect: 'fade',
+            closeEffect: 'fade'
+        });
+
+        // Select all checkboxes
+        const selectAll = document.getElementById("selectAll");
+        selectAll.addEventListener("change", function () {
+            const checkboxes = document.querySelectorAll('input[name="selectedRoomIds"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    });
+</script>
