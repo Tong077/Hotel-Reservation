@@ -13,5 +13,7 @@ namespace H_application.DTOs.ReservationDto
         public string NewRoomNumber { get; set; } = "";
         public DateTime Date { get; set; }
        
+        public string NewStatus { get; set; } = "";
+
     }
 }

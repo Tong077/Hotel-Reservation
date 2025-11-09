@@ -440,51 +440,7 @@ namespace H_Reservation.Controllers
         
         public async Task<IActionResult> _RoomCalendar(DateTime? startDate, CancellationToken cancellationToken)
         {
-            var start = startDate ?? DateTime.Today;
-            var end = start.AddDays(30); // 1-month view
-
-            var reservations = await _context.Reservations
-                .Include(r => r.rooms)
-                .ThenInclude(rt => rt!.roomType)
-                .Include(r => r.guest)
-                .Where(r => r.CheckInDate != null && r.CheckInDate <= end &&
-                            (r.CheckOutDate == null || r.CheckOutDate >= start))
-                .ToListAsync(cancellationToken);
-
-            var calendarData = new List<RoomCalendarDto>();
-
-            foreach (var res in reservations)
-            {
-                if (res.rooms == null) continue;
-
-                var guestName = res.guest != null
-                    ? $"{res.guest.FirstName} {res.guest.LastName}"
-                    : "Unknown";
-
-                var checkIn = res.CheckInDate ?? start;
-                var checkOut = res.CheckOutDate ?? end;
-
-               
-                var room = res.rooms;
-                if (room == null) continue;
-
-                for (var date = checkIn.Date; date <= checkOut.Date; date = date.AddDays(1))
-                {
-                    if (date < start || date > end) continue;
-
-                    calendarData.Add(new RoomCalendarDto
-                    {
-                        ReservationId = res.ReservationId,
-                        Date = date,
-                        RoomNumber = room.RoomNumber,
-                        RoomType = room.roomType?.Name ?? "Unknown",
-                        GuestName = guestName,
-                        Status = res.Status ?? "Available",
-                        CheckInDate = res.CheckInDate,
-                        CheckOutDate = res.CheckOutDate
-                    });
-                }
-            }
+            var calendarData = await _reservartion.GetRoomCalendarAsync(startDate, cancellationToken);
 
             return PartialView("_RoomCalendar", calendarData);
         }
@@ -502,14 +458,14 @@ namespace H_Reservation.Controllers
                 .Where(r => r.CheckInDate != null && r.CheckInDate <= endDate &&
                             (r.CheckOutDate == null || r.CheckOutDate >= startDate))
                 .ToListAsync(cancellationToken);
-           
+
             var calendarData = new List<RoomCalendarDto>();
 
             foreach (var room in rooms)
             {
                 for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
                 {
-                   
+
                     var reservation = reservations.FirstOrDefault(r =>
                         r.rooms != null &&
                         r.rooms.RoomNumber == room.RoomNumber && r.CheckInDate!.Value.Date <= date && (r.CheckOutDate == null || r.CheckOutDate.Value.Date > date));
@@ -520,10 +476,13 @@ namespace H_Reservation.Controllers
                         ReservationId = reservation?.ReservationId ?? 0,
                         Date = date,
                         RoomNumber = room.RoomNumber,
+                       
                         RoomType = room.roomType?.Name ?? "Unknown",
                         GuestName = reservation?.guest != null
                         ? $"{reservation.guest.FirstName} {reservation.guest.LastName}"
-                        : null, Status = reservation != null ? reservation.Status : room.Status ?? " ",});
+                        : null,
+                        Status = reservation != null ? reservation.Status : room.Status ?? " ",
+                    });
 
                 }
             }
@@ -533,7 +492,7 @@ namespace H_Reservation.Controllers
                 .Where(r => r.CheckInDate != null)
                 .Min(r => r.CheckInDate!.Value.Date);
 
-           
+
             var calendarStart = earliestCheckIn < today ? today : earliestCheckIn;
 
             return Json(new { calendarData, calendarStart });
@@ -542,24 +501,17 @@ namespace H_Reservation.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request, CancellationToken cancellationToken)
-        {
-            var reservation = await _context.Reservations
-                .Include(r => r.rooms)
-                .FirstOrDefaultAsync(r =>
-                    r.rooms!.RoomNumber == request.RoomNumber &&
-                    r.CheckInDate <= request.Date &&
-                    r.CheckOutDate >= request.Date,
-                    cancellationToken);
 
-            if (reservation == null)
-                return NotFound("Reservation not found for that room/date.");
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus([FromBody] SwitchRoomRequest request, CancellationToken cancellationToken)
+        {
+            var reservation = await _context.Reservations.FindAsync(request.ReservationId);
+            if (reservation == null) return NotFound("Reservation not found.");
 
             reservation.Status = request.NewStatus;
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Json(new { success = true });
+            return Ok(new { success = true });
         }
         [HttpPost]
         public async Task<IActionResult> MoveReservation([FromBody] SwitchRoomRequest request, CancellationToken cancellationToken)

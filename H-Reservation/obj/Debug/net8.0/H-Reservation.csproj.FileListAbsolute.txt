@@ -159,3 +159,4 @@ D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.pdb
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.genruntimeconfig.cache
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\ref\H-Reservation.dll
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.MvcApplicationPartsAssemblyInfo.cs
+D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.sourcelink.json

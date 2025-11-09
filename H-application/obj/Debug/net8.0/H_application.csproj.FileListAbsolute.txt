@@ -15,3 +15,4 @@ D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\refint\H_Application.dll
 D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.pdb
 D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.genruntimeconfig.cache
 D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\ref\H_Application.dll
+D:\Asp_net\H-Reservation\H-application\obj\Debug\net8.0\H_Application.sourcelink.json

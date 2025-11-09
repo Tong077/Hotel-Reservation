@@ -12,3 +12,4 @@ D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\refint\H_Domain.dll
 D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_Domain.pdb
 D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_Domain.genruntimeconfig.cache
 D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\ref\H_Domain.dll
+D:\Asp_net\H-Reservation\Hotel\obj\Debug\net8.0\H_Domain.sourcelink.json

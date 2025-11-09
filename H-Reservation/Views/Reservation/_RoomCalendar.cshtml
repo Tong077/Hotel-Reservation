@@ -8,14 +8,12 @@
             <h4 class="card-title mb-0">Room Occupancy Calendar</h4>
             <div class="d-flex align-items-center gap-2">
                 <span id="calendarRange" class="fw-bold mr-2"></span>
-
-                <select id="monthFilter" class="form-select form-select-sm btn btn-sm btn-outline-primary">
+                <select id="monthFilter" class="form-select form-select-sm btn btn-sm btn-outline-primary mr-3">
                     @for (int i = 1; i <= 12; i++)
                     {
                         <option value="@i">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
                     }
                 </select>
-
                 <button id="prevWeek" class="btn btn-outline-secondary btn-sm">◀ Previous</button>
                 <button id="nextWeek" class="btn btn-outline-secondary btn-sm">Next ▶</button>
             </div>
@@ -26,7 +24,7 @@
             <p class="text-muted mt-2">Loading calendar...</p>
         </div>
 
-        <div id="calendarContainerWrapper" style="max-height: 500px; overflow-y: auto;">
+        <div id="calendarContainerWrapper" style="max-height:500px; overflow-y:auto;">
             <div id="calendarContainer" class="calendar-grid-container"></div>
         </div>
     </div>
@@ -35,7 +33,7 @@
 <style>
     .calendar-grid-container {
         display: grid;
-        grid-template-columns: 120px repeat(7, 1fr);
+        grid-template-columns: 120px repeat(7,1fr);
         gap: 1px;
         border: 1px solid #dee2e6;
         background-color: #dee2e6;
@@ -117,80 +115,68 @@
     let currentStart = new Date();
     const daysToShow = 7;
     let calendarData = [];
+    const statuses = ["Pending","Confirmed","CheckedIn","CheckedOut","Cancelled"];
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const monthFilter = document.getElementById("monthFilter");
-        monthFilter.value = new Date().getMonth() + 1;
+    window.addEventListener('DOMContentLoaded',()=> {
+        document.getElementById("monthFilter").value = new Date().getMonth()+1;
         loadCalendar();
     });
 
-    async function loadCalendar() {
+    async function loadCalendar(){
         document.getElementById("loading").style.display = "block";
 
-        // Calculate start/end dates
-        const monthFilterValue = document.getElementById("monthFilter").value;
+        const monthFilter = document.getElementById("monthFilter").value;
         let startDate = new Date(currentStart);
-        let endDate = new Date(currentStart.getTime() + (daysToShow - 1) * 24 * 60 * 60 * 1000);
+        let endDate = new Date(currentStart.getTime() + (daysToShow-1)*24*60*60*1000);
 
-        if (monthFilterValue) {
-            startDate = new Date(startDate.getFullYear(), monthFilterValue - 1, 1);
-            endDate = new Date(startDate.getFullYear(), monthFilterValue, 0);
+        if(monthFilter){
+            startDate = new Date(startDate.getFullYear(), monthFilter-1,1);
+            endDate = new Date(startDate.getFullYear(), monthFilter,0);
         }
 
-        // Fetch calendar data from backend
         const res = await fetch(`/Reservation/GetCalendarData?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
         const result = await res.json();
         calendarData = result.calendarData;
 
-        // Generate date headers
         const dates = [];
-        for (let i = 0; i < daysToShow; i++) {
-            const d = new Date(currentStart);
-            d.setDate(d.getDate() + i);
+        for(let i=0;i<daysToShow;i++){
+            const d=new Date(currentStart);
+            d.setDate(d.getDate()+i);
             dates.push(d);
         }
-
         document.getElementById("calendarRange").innerText =
-            `${dates[0].toLocaleDateString('en-GB')} - ${dates[dates.length - 1].toLocaleDateString('en-GB')}`;
+            `${dates[0].toLocaleDateString('en-GB')} - ${dates[dates.length-1].toLocaleDateString('en-GB')}`;
 
-        // Rooms
-        const rooms = [...new Set(calendarData.map(x => Number(x.roomNumber)))].sort((a,b)=>a-b);
-        const container = document.getElementById("calendarContainer");
-        container.innerHTML = "";
+        const rooms=[...new Set(calendarData.map(x=>Number(x.roomNumber)))].sort((a,b)=>a-b);
+        const container=document.getElementById("calendarContainer");
+        container.innerHTML="";
 
-        // Header row
+        // Header
         container.innerHTML += `<div class="calendar-header">Room</div>`;
-        dates.forEach(d => {
-            const formatted = d.toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' });
+        dates.forEach(d=>{
+            const formatted = d.toLocaleDateString('en-GB',{weekday:'short', month:'short', day:'numeric'});
             container.innerHTML += `<div class="calendar-header">${formatted}</div>`;
         });
 
-        // Rows per room
-        rooms.forEach(room => {
+        // Rows
+        rooms.forEach(room=>{
             container.innerHTML += `<div class="calendar-room">${room}</div>`;
-            dates.forEach(date => {
-                const cellDateStr = date.toISOString().split('T')[0];
-                const cellData = calendarData.find(x =>
-                    Number(x.roomNumber) === room &&
-                    new Date(x.date).toISOString().split('T')[0] === cellDateStr
-                );
+            dates.forEach(date=>{
+                const cellDateStr=date.toISOString().split('T')[0];
+                const cellData = calendarData.find(x=>Number(x.roomNumber)===room && new Date(x.date).toISOString().split('T')[0]===cellDateStr);
 
                 const status = cellData?.status || "Available";
-                const color = {
-                    "CheckedIn": "bg-success",
-                    "Confirmed": "bg-primary",
-                    "CheckedOut": "bg-info",
-                    "Pending": "bg-warning",
-                    "Cancelled": "bg-danger",
-                    "Cleaning": "bg-secondary",
-                    "Available": "bg-light"
-                }[status] || "bg-light";
+                const color = getStatusColor(status);
+                const guestName = cellData?.guestName || "";
 
-                const guestName = cellData?.guestName || "Available";
                 container.innerHTML += `
                     <div class="calendar-cell ${color}"
                          data-room="${room}"
                          data-date="${date.toISOString()}"
+                         data-id="${cellData?.reservationId}"
+                         data-status="${status}"
+                         data-guest-name="${guestName}"
+                         onclick="editStatus(this)"
                          draggable="${status !== 'Available' && status !== 'CheckedOut'}"
                          ondragstart="onDragStart(event)"
                          ondragover="onDragOver(event)"
@@ -198,90 +184,94 @@
                          title="${guestName} (${status})">
                         <small><strong>${status}</strong> – ${guestName}</small>
                     </div>`;
-
-              });
+            });
         });
 
         document.getElementById("loading").style.display = "none";
     }
 
-    // ===== Drag & Drop Logic =====
+    // ===== Drag & Drop =====
     let dragged = null;
-
-    function onDragStart(e) {
-        const room = e.target.dataset.room;
-        const date = e.target.dataset.date.split('T')[0];
-        const cell = calendarData.find(c => c.roomNumber == room && c.date.split('T')[0] === date);
-        if (!cell || cell.status === "CheckedOut") {
-            e.preventDefault();
-            return;
-        }
-        dragged = { roomNumber: room, date, status: cell.status };
-        e.dataTransfer.effectAllowed = "move";
+    function onDragStart(e){
+        const room=e.target.dataset.room;
+        const date=e.target.dataset.date.split('T')[0];
+        const cell=calendarData.find(c=>c.roomNumber==room && c.date.split('T')[0]===date);
+        if(!cell || cell.status==="CheckedOut"){ e.preventDefault(); return; }
+        dragged={roomNumber:room, date, reservationId:cell.reservationId};
+        e.dataTransfer.effectAllowed="move";
     }
-
-    function onDragOver(e) {
+    function onDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect="move"; }
+    async function onDrop(e){
         e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-    }
+        const newRoom=e.target.dataset.room;
+        if(!dragged || !newRoom || dragged.roomNumber===newRoom) return;
+        if(!confirm(`Move reservation from room ${dragged.roomNumber} → ${newRoom}?`)) return;
 
-    async function onDrop(e) {
-        e.preventDefault();
-        const newRoom = e.target.dataset.room;
-        if (!dragged || !newRoom || dragged.roomNumber === newRoom) return;
-
-        if (!confirm(`Move reservation from room ${dragged.roomNumber} → ${newRoom}?`)) return;
-
-        const payload = {
-            OldRoomNumber: dragged.roomNumber,
-            NewRoomNumber: newRoom
-        };
-
-        const res = await fetch('/Reservation/MoveReservation', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const payload={ ReservationId: dragged.reservationId, OldRoomNumber: dragged.roomNumber, NewRoomNumber: newRoom };
+        const res=await fetch('/Reservation/MoveReservation',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
             body: JSON.stringify(payload)
         });
 
-        if (res.ok) {
-            alert("Room switched successfully!");
-            loadCalendar();
-        } else {
-            const error = await res.text();
-            alert("Error: " + error);
+        if(res.ok){ alert("Room switched successfully!"); loadCalendar(); }
+        else{ const error=await res.text(); alert("Error: "+error); }
+        dragged=null;
+    }
+
+    // ===== Inline status edit =====
+    function editStatus(cell){
+        const resId = cell.dataset.id;
+        const currentStatus = cell.dataset.status;
+        if(!resId || cell.querySelector("select")) return;
+
+        const select=document.createElement("select");
+        select.className="form-select form-select-sm";
+        statuses.forEach(s=>{
+            const option=document.createElement("option");
+            option.value=s; option.textContent=s;
+            if(s===currentStatus) option.selected=true;
+            select.appendChild(option);
+        });
+
+        cell.innerHTML=''; cell.appendChild(select); select.focus();
+
+        select.onblur=select.onchange=async function(){
+            const newStatus = select.value;
+            if(newStatus!==currentStatus){
+                try{
+                    const res = await fetch('/Reservation/UpdateStatus',{
+                        method:'POST',
+                        headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ reservationId:Number(resId), newStatus })
+                    });
+                    if(!res.ok) throw new Error("Failed to update status");
+
+                    cell.dataset.status=newStatus;
+                    cell.innerHTML=`<small><strong>${newStatus}</strong> – ${cell.dataset.guestName || ''}</small>`;
+                    cell.className='calendar-cell ' + getStatusColor(newStatus);
+                }catch(err){
+                    alert(err.message);
+                    cell.innerHTML=`<small><strong>${currentStatus}</strong> – ${cell.dataset.guestName || ''}</small>`;
+                }
+            } else {
+                cell.innerHTML=`<small><strong>${currentStatus}</strong> – ${cell.dataset.guestName || ''}</small>`;
+            }
         }
-
-        dragged = null;
     }
 
-    // ===== Manual status update =====
-    function updateStatus(roomNumber, date, currentStatus) {
-        const newStatus = prompt(`Update status for Room ${roomNumber} on ${new Date(date).toLocaleDateString()}:\n(Current: ${currentStatus || "Empty"})`, currentStatus);
-        if (!newStatus) return;
-
-        fetch('/Reservation/UpdateStatus', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomNumber, date, newStatus })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to update status");
-            return response.json();
-        })
-        .then(() => loadCalendar())
-        .catch(err => alert(err.message));
+    function getStatusColor(status){
+        return {
+            "Pending":"bg-warning",
+            "Confirmed":"bg-primary",
+            "CheckedIn":"bg-success",
+            "CheckedOut":"bg-info",
+            "Cancelled":"bg-danger",
+            "Available":"bg-light"
+        }[status] || "bg-light";
     }
 
-    // ===== Navigation =====
-    document.getElementById("prevWeek").addEventListener("click", () => {
-        currentStart.setDate(currentStart.getDate() - daysToShow);
-        loadCalendar();
-    });
-
-    document.getElementById("nextWeek").addEventListener("click", () => {
-        currentStart.setDate(currentStart.getDate() + daysToShow);
-        loadCalendar();
-    });
-
-    document.getElementById("monthFilter").addEventListener("change", () => loadCalendar());
+    document.getElementById("prevWeek").addEventListener("click",()=>{ currentStart.setDate(currentStart.getDate()-daysToShow); loadCalendar(); });
+    document.getElementById("nextWeek").addEventListener("click",()=>{ currentStart.setDate(currentStart.getDate()+daysToShow); loadCalendar(); });
+    document.getElementById("monthFilter").addEventListener("change",()=>loadCalendar());
 </script>

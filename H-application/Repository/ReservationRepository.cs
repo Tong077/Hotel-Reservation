@@ -468,50 +468,54 @@ namespace H_Reservation.Service
 
         }
 
-        public async Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken)
+        public async Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime? startDate, CancellationToken cancellationToken)
         {
+            var start = startDate ?? DateTime.Today;
+            var end = start.AddDays(30); // 1-month view
+
             var reservations = await _context.Reservations
                 .Include(r => r.rooms)
+                .ThenInclude(rt => rt!.roomType)
                 .Include(r => r.guest)
-                .Where(r => r.CheckInDate <= endDate && r.CheckOutDate >= startDate)
-                .Select(r => new
-                {
-                    r.ReservationId,
-                    r.Status,
-                    r.CheckInDate,
-                    r.CheckOutDate,
-                    Guest = r.guest!.FirstName + " " + r.guest.LastName,
-                    Room = r.rooms
-                }).ToListAsync(cancellationToken);
+                .Where(r => r.CheckInDate != null && r.CheckInDate <= end &&
+                            (r.CheckOutDate == null || r.CheckOutDate >= start))
+                .ToListAsync(cancellationToken);
 
-            var results = new List<RoomCalendarDto>();
+            var calendarData = new List<RoomCalendarDto>();
 
             foreach (var res in reservations)
             {
-                if (res.Room != null && res.CheckInDate.HasValue && res.CheckOutDate.HasValue)
+                if (res.rooms == null) continue;
+
+                var guestName = res.guest != null
+                    ? $"{res.guest.FirstName} {res.guest.LastName}"
+                    : "Unknown";
+
+                var checkIn = res.CheckInDate ?? start;
+                var checkOut = res.CheckOutDate ?? end;
+
+
+                var room = res.rooms;
+                if (room == null) continue;
+
+                for (var date = checkIn.Date; date <= checkOut.Date; date = date.AddDays(1))
                 {
-                    // Start from CheckInDate, end the day **before CheckOutDate**
-                    var currentDate = res.CheckInDate.Value.Date;
-                    var lastDate = res.CheckOutDate.Value.Date.AddDays(-1);
+                    if (date < start || date > end) continue;
 
-                    while (currentDate <= lastDate)
+                    calendarData.Add(new RoomCalendarDto
                     {
-                        results.Add(new RoomCalendarDto
-                        {
-                            ReservationId = res.ReservationId,
-                            Date = currentDate,
-                            RoomNumber = res.Room.RoomNumber,
-                            GuestName = res.Guest,
-                            Status = res.Status
-                        });
-
-                        currentDate = currentDate.AddDays(1);
-                    }
+                        ReservationId = res.ReservationId,
+                        Date = date,
+                        RoomNumber = room.RoomNumber,
+                        RoomType = room.roomType?.Name ?? "Unknown",
+                        GuestName = guestName,
+                        Status = res.Status ?? "Available",
+                        CheckInDate = res.CheckInDate,
+                        CheckOutDate = res.CheckOutDate
+                    });
                 }
             }
-
-            return results;
+            return calendarData;
         }
-
     }
 }

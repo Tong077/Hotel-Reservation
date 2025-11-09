@@ -20,6 +20,6 @@ namespace H_application.Service
         Task<ReservationResponse> ConfirmReservationAsync(CancellationToken cancellationToken);
         Task<ReservationResponse> PendingReservatoin(CancellationToken cancellationToken);
 
-        Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
+        Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime? startDate, CancellationToken cancellationToken);
     }
 }
