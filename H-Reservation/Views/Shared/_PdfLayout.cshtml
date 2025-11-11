@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <partial name="_css" />
+</head>
+<body style="height: 600px; overflow-y: auto;">
+    <div id="main-wrapper">    
+        
+            <div class="content-body ml-2">
+                <div class="container-fluid mt-4">
+                    @RenderBody()
+
+                </div>
+            </div>
+       
+    </div>
+    
+    @RenderSection("Scripts", required: false)
+    <partial name="_script" />
+</body>
+</html>

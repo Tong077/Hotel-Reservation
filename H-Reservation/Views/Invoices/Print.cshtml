@@ -1,154 +1,102 @@
 ﻿@using H_application.DTOs.InvoicesDto
 @model InvoicesResponse
+@{
+    Layout = "_PdfLayout";
+    ViewData["Title"] = "Invoice";
+}
 
-
-<div class="container invoice-box">
- 
-    <div class="invoice-header d-flex justify-content-between align-items-center border-bottom mb-4 pb-3">
-        <div>
-            <h1 class="invoice-title mb-1">INVOICE</h1>
-            <p class="text-muted mb-0">Reservation ID: <strong>@Model.ReservationId</strong></p>
-        </div>
-        <div class="text-end">
-            <p><strong>Issued Date:</strong> @Model.IssuedDate?.ToString("dd MMM yyyy")</p>
-            <p><strong>Invoice ID:</strong> #@Model.InvoiceId</p>
-        </div>
-    </div>
-
-    <!-- Billed From / Billed To -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h6 class="text-uppercase fw-bold text-secondary">Billed From</h6>
-            <p class="mb-1 fw-semibold">@Model.HotelName</p>
-            <p class="mb-1">@Model.StreetName</p>
-            <p class="mb-1">@Model.Address</p>
+<div class="card">
+    <div class="card-body">
+        <div class="bg-danger-lighten-2 border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="fw-bold text-primary mb-1">INVOICE</h1>
+                <p class="text-muted text-info mb-0">RESERVATION ID : <strong>@Model.ReservationId</strong></p>
+            </div>
+            <div class="text-end">
+                <p class="text-secondary mb-1"><strong> Date : </strong> @Model.IssuedDate?.ToString("dd MMM yyyy")</p>
+                <p><strong class="text-primary">INVOICE ID : </strong> # @Model.InvoiceId</p>
+            </div>
         </div>
 
-        <div class="col-md-6 text-md-end">
-            <h6 class="text-uppercase fw-bold text-secondary">Billed To</h6>
-            <p class="mb-1 fw-semibold">@Model.GuestName</p>
-            <p class="mb-1">Room: @Model.RoomNumber</p>
-            <p class="mb-1">Check-in: @Model.CheckInDate?.ToString("dd MMM yyyy")</p>
-            <p class="mb-1">Check-out: @Model.CheckOutDate?.ToString("dd MMM yyyy")</p>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="text-uppercase fw-bold text-secondary">Billed From</h6>
+                <p class="fw-semibold mb-0">@Model.HotelName</p>
+                <p class="mb-0">@Model.StreetName</p>
+                <p class="mb-0">@Model.Address</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <h6 class="text-uppercase fw-bold text-secondary">Billed To</h6>
+                <p class="fw-semibold mb-0">Guest Name : @Model.GuestName</p>
+                <p class="mb-0">Room : @Model.RoomNumber (@Model.RoomType)</p>
+                <p class="mb-0">Check-in : @Model.CheckInDate?.ToString("dd MMM yyyy")</p>
+                <p>Check-out : @Model.CheckOutDate?.ToString("dd MMM yyyy")</p>
+            </div>
         </div>
-    </div>
 
-    <!-- Service Table -->
-    <table class="table table-bordered align-middle">
-        <thead class="table-primary">
-            <tr>
-                <th>Description</th>
-                <th class="text-end">Qty</th>
-                <th class="text-end">Unit Price</th>
-                <th class="text-end">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Services != null && Model.Services.Any())
-            {
-                foreach (var item in Model.Services)
+        <table class="table table-bordered align-middle shadow-sm">
+            <thead style="background-color: #0d6efd; color: #fff;">
+                <tr>
+                    <th>Service Name</th>
+                    <th class="text-end">Qty</th>
+                    <th class="text-end">Unit Price</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Services != null && Model.Services.Any())
+                {
+                    foreach (var item in Model.Services)
+                    {
+                        var subtotal = (item.Price ?? 0) * (item.Quantity ?? 1);
+                        <tr>
+                            <td>@item.ServiceName</td>
+                            <td class="text-end">@item.Quantity</td>
+                            <td class="text-end">@item.Price?.ToString("C")</td>
+                            <td class="text-end">@subtotal.ToString("C")</td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@item.ServiceName</td>
-                        <td class="text-end">@item.Quantity</td>
-                        <td class="text-end">@item.Price?.ToString("C")</td>
-                        <td class="text-end">@((item.Price ?? 0) * (item.Quantity ?? 0)).ToString("C")</td>
+                        <td colspan="4" class="text-center text-muted">No services added.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-center text-muted">No service items found.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <!-- Totals -->
-    <div class="row justify-content-end">
-        <div class="col-md-6">
-            <table class="table table-borderless">
-                <tr>
-                    <td class="text-end fw-semibold">Subtotal:</td>
-                    <td class="text-end fw-semibold">@Model.TotalAmount?.ToString("C")</td>
-                </tr>
-                <tr>
-                    <td class="text-end fw-semibold">Tax:</td>
-                    <td class="text-end fw-semibold">@Model.TaxAmount?.ToString("C")</td>
-                </tr>
-                <tr class="border-top">
-                    <td class="text-end fw-bold">Grand Total:</td>
-                    <td class="text-end fw-bold text-primary">@Model.GrandTotal?.ToString("C")</td>
-                </tr>
-            </table>
+        <div class="row justify-content-end mt-4">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="text-end fw-semibold">Room & Services Total:</td>
+                        <td class="text-end fw-semibold">@Model.TotalAmount?.ToString("C")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-end fw-semibold">Tax:</td>
+                        <td class="text-end fw-semibold">@Model.TaxAmount?.ToString("C")</td>
+                    </tr>
+                    <tr class="border-top">
+                        <td class="text-end fw-bold fs-5">Grand Total:</td>
+                        <td class="text-end fw-bold fs-5 text-primary">@Model.GrandTotal?.ToString("C")</td>
+                    </tr>
+                </table>
+            </div>
         </div>
-    </div>
 
-   
-    <div class="mt-4 border-top pt-3 text-center">
-        <p class="text-muted small mb-1">Thank you for your business!</p>
-        <p class="text-muted small">For billing inquiries, please contact our front desk or billing department.</p>
-    </div>
+        <div class="bg-danger-lighten-2 text-center mt-4 border-top pt-3">
+            <p class="text-muted small mb-1">Thank you for your business!</p>
+            <p class="text-muted small mb-0">For billing inquiries, please contact our front desk or billing department.</p>
+        </div>
 
-    <!-- Print Button -->
-    <div class="text-end mt-3">
-        <button class="btn btn-success btn-sm" onclick="window.print()">
-            <i class="bi bi-printer"></i> Print Invoice
-        </button>
     </div>
 </div>
-
-<style>
-    body {
-        background-color: #f8f9fa;
-        font-family: "Segoe UI", sans-serif;
-    }
-
-    .invoice-box {
-        background: #fff;
-        padding: 40px;
-        margin: 40px auto;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        max-width: 900px;
-    }
-
-    .invoice-header {
-        border-bottom: 2px solid #0d6efd;
-    }
-
-    .invoice-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #0d6efd;
-    }
-
-    .table th {
-        background-color: #0d6efd;
-        color: #fff;
-        border-color: #0d6efd !important;
-    }
-
-    media print {
-        body
-    {
-        background: white !important;
-    }
-
-    .btn {
-        display: none;
-    }
-
-    .invoice-box {
-        box-shadow: none;
-        border: none;
-        margin: 0;
-    }
-
-    .invoice-title {
-        color: black !important;
-    }
-
-    }
-</style>
+<div class="text-end mt-4 no-print mt-9">
+    <button class="btn btn-success btn-sm" onclick="window.print()">
+        <i class="fa-solid fa-print"></i> Print Invoice
+    </button>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary ms-2">
+        <i class="bi bi-arrow-left-circle"></i> Back to List
+    </a>
+</div>

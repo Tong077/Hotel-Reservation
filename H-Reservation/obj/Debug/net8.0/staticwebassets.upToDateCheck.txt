@@ -1,3 +1,8 @@
+wwwroot\bootstrap\css\bootstrap.min.css
+wwwroot\bootstrap\css\bootstrap-grid.css
+wwwroot\bootstrap\css\bootstrap-grid.min.css
+wwwroot\bootstrap\js\bootstrap.bundle.min.js
+wwwroot\bootstrap\js\bootstrap.min.js
 wwwroot\images\rooms\003bfdab-189f-49cf-847f-ce2ad4f6a47b.png
 wwwroot\images\rooms\03d97eb9-685d-49a1-9bea-1863acd590d2.png
 wwwroot\images\rooms\04198242-d29e-47f7-864b-2c62434cdb4b.jpg

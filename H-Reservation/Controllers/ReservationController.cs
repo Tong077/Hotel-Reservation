@@ -468,7 +468,7 @@ namespace H_Reservation.Controllers
 
                     var reservation = reservations.FirstOrDefault(r =>
                         r.rooms != null &&
-                        r.rooms.RoomNumber == room.RoomNumber && r.CheckInDate!.Value.Date <= date && (r.CheckOutDate == null || r.CheckOutDate.Value.Date > date));
+                        r.rooms.RoomNumber == room.RoomNumber && r.CheckInDate!.Value.Date <= date && (r.CheckOutDate == null || r.CheckOutDate.Value.Date >= date));
 
 
                     calendarData.Add(new RoomCalendarDto

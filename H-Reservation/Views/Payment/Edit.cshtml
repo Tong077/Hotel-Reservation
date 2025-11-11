@@ -1,8 +1,10 @@
 ﻿@using H_application.DTOs.Payment
+@using H_application.DTOs.PaymentDto
 @model PaymentDtoUpdate
 @{
-    ViewData["Title"] = "Payment";
+    ViewData["Title"] = "Edit Payment";
 }
+
 @if (TempData["ModelStateErrors"] != null)
 {
     <div class="alert alert-danger">
@@ -15,25 +17,38 @@
         <h4 class="card-title">Update Payment Information</h4>
 
         <form asp-controller="Payment" asp-action="Update" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="PaymentId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <!-- Reservation selection -->
             <div class="form-row">
-                <!-- Reservation Dropdown -->
                 <div class="form-group col-sm-6">
-                    <label for="ReservationIds">Reservations</label>
+                    <label>Reservations</label>
                     <div class="custom-dropdown w-100">
                         <div class="form-control dropdown-display text-truncate" id="dropdownButton" onclick="toggleDropdown()">
                             Select reservations
                         </div>
                         <div class="dropdown-list border bg-white shadow-sm d-none" id="dropdownList">
-                            @foreach (var r in ViewBag.Reservations)
+                            @* @foreach (var r in ViewBag.Reservations)
                             {
                                 var isChecked = ViewBag.SelectedReservationIds.Contains(r.ReservationId) ? "checked" : "";
                                 <div class="dropdown-item">
                                     <input type="checkbox"
                                            value="@r.ReservationId"
                                            class="reservation-checkbox"
+                                           data-amount="@r.TotalAmount"
+                                           id="res_@r.ReservationId"
+                                           @isChecked />
+                                    <label for="res_@r.ReservationId">@($"Guest: {r.GuestFullName} | Room: {r.RoomNumber} | Total: {r.DisplayTotal}")</label>
+                                </div>
+                            } *@
+                            @foreach (var r in ViewBag.Reservations as List<ReservationForPaymentDto>)
+                            {
+                                var isChecked = ViewBag.SelectedReservationIds.Contains(r.ReservationId) ? "checked" : "";
+                                <div class="dropdown-item">
+                                    <input type="checkbox"
+                                           class="reservation-checkbox"
+                                           data-id="@r.ReservationId"
                                            data-amount="@r.TotalPrice"
                                            id="res_@r.ReservationId"
                                            @isChecked />
@@ -43,24 +58,21 @@
                                 </div>
                             }
 
+
                         </div>
                     </div>
                     <small class="text-muted">Click to select one or more reservations.</small>
-                    @for (int i = 0; i < Model.ReservationId?.Count; i++)
-                    {
-                        <input type="hidden" name="ReservationId" value="@Model.ReservationId[i]" />
-                    }
                     <div id="ReservationIdsContainer"></div>
-
                 </div>
 
-                <!-- Amount -->
+                <!-- Total Amount -->
                 <div class="form-group col-sm-6">
-                    <label asp-for="Amount" class="control-label">Total Amount</label>
-                    <input asp-for="Amount" class="form-control" id="AmountInput" />
+                    <label asp-for="Amount">Total Amount</label>
+                    <input asp-for="Amount" class="form-control" id="AmountInput" readonly />
                 </div>
             </div>
 
+            <!-- Payment details -->
             <div class="form-row">
                 <div class="form-group col-sm-4">
                     <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
@@ -82,7 +94,7 @@
                 <div class="form-group col-sm-4">
                     <span asp-validation-for="RefundAmount" class="text-danger"></span>
                     <label asp-for="RefundAmount">Refund Amount</label>
-                    <input asp-for="RefundAmount" class="form-control" placeholder="Refund Amount" />
+                    <input asp-for="RefundAmount" class="form-control" />
                 </div>
             </div>
 
@@ -107,7 +119,7 @@
             </div>
 
             <div class="form-group float-right">
-                <button type="submit" class="btn btn-sm btn-success ml-1">Save Change</button>
+                <button type="submit" class="btn btn-sm btn-success">Save Changes</button>
                 <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
             </div>
         </form>
@@ -115,76 +127,69 @@
 </div>
 
 <script>
-         const dropdownButton = document.getElementById('dropdownButton');
-    const dropdownList = document.getElementById('dropdownList');
-    const amountInput = document.getElementById('AmountInput');
-    const form = document.querySelector('form');
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownList = document.getElementById('dropdownList');
+        const amountInput = document.getElementById('AmountInput');
+        const form = document.querySelector('form');
 
-    // Update hidden inputs, total, and display
-    function updateSelection() {
-        const selectedItems = [];
-        const selectedIds = [];
-        let total = 0;
-
-        // Remove old hidden inputs
-        document.querySelectorAll('input[name="ReservationId"]').forEach(h => h.remove());
-
-        document.querySelectorAll('.reservation-checkbox:checked').forEach(chk => {
-            selectedIds.push(chk.value);
-            total += parseFloat(chk.dataset.amount) || 0;
-            selectedItems.push(chk.nextElementSibling.innerText);
-
-            // Add new hidden input for model binding
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'ReservationId';
-            input.value = chk.value;
-            form.appendChild(input);
+        // Toggle dropdown visibility
+        dropdownButton.addEventListener('click', () => {
+            dropdownList.classList.toggle('d-none');
         });
 
-        amountInput.value = total.toFixed(2);
-        dropdownButton.textContent = selectedItems.length ? selectedItems.join(", ") : "Select reservations";
-    }
+        // Update selection and total
+        function updateSelection() {
+            let total = 0;
+            const selectedIds = [];
 
-    // Initialize pre-selected reservations on page load
-    function initializeSelection() {
+            // Remove previously added hidden inputs
+            document.querySelectorAll('input[name="ReservationId"]').forEach(el => el.remove());
+
+            document.querySelectorAll('.reservation-checkbox:checked').forEach(chk => {
+                const id = chk.dataset.id;
+                const amount = parseFloat(chk.dataset.amount) || 0;
+                total += amount;
+                selectedIds.push(id);
+
+                // Hidden input for POST
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'ReservationId';
+                hiddenInput.value = id;
+                form.appendChild(hiddenInput);
+            });
+
+            // Update the display
+            amountInput.value = total.toFixed(2);
+            dropdownButton.textContent = selectedIds.length
+                ? `Selected ${selectedIds.length} reservations`
+                : "Select reservations";
+        }
+
+        // Attach event listeners to checkboxes
         document.querySelectorAll('.reservation-checkbox').forEach(cb => {
-            if (cb.checked) {
-                updateSelection(); // make sure total and display are correct
+            cb.addEventListener('change', updateSelection);
+        });
+
+        // Hide dropdown if click outside
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.custom-dropdown').contains(e.target)) {
+                dropdownList.classList.add('d-none');
             }
         });
-    }
+         const paymentSelect = document.getElementById('PaymentStatusSelect');
+        paymentSelect.addEventListener('change', function () {
+            if (this.value === "Completed") {
+                toastr.warning("Completed payments cannot be modified.");
+            }
+        });
 
-    // Event listeners
-    document.querySelectorAll('.reservation-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateSelection);
+        // Initialize on page load
+        updateSelection();
     });
-
-    // Toggle dropdown
-    function toggleDropdown() {
-        dropdownList.classList.toggle('d-none');
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
-        if (!document.querySelector('.custom-dropdown').contains(e.target)) {
-            dropdownList.classList.add('d-none');
-        }
-    });
-
-    // Completed payment warning
-    const paymentSelect = document.getElementById('PaymentStatusSelect');
-    paymentSelect.addEventListener("change", function () {
-        if (this.value === "Completed") {
-            toastr.warning("Completed payments cannot be modified.");
-        }
-    });
-
-    // Initialize selection on page load
-    initializeSelection();
-
-
 </script>
+
 
 <style>
     .custom-dropdown {

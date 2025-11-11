@@ -45,38 +45,37 @@ namespace H_Reservation.Controllers
             if (invoice == null)
                 return NotFound();
 
-            return new ViewAsPdf("Print", invoice)
-            {
-                FileName = $"Invoice_{invoice.InvoiceId}.pdf",
-                PageSize = Rotativa.AspNetCore.Options.Size.A4,
-                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-                CustomSwitches = "--footer-center \"Page [page] of [toPage]\" --footer-font-size 10"
-            };
+            return View(invoice);
+        }
+        [HttpGet]
+        public IActionResult PrintMultiple()
+        {
+            return View("PrintMultiple");
         }
 
-       
-        public async Task<IActionResult> PrintMultiple([FromQuery] List<int> invoiceIds, CancellationToken cancellation)
+        [HttpPost]
+        public async Task<IActionResult> PrintMultiple([FromForm] List<int> invoiceIds, CancellationToken cancellation, bool separatePages = true)
         {
             if (invoiceIds == null || !invoiceIds.Any())
                 return BadRequest("No invoices selected.");
 
             var invoices = new List<InvoicesResponse>();
+
             foreach (var id in invoiceIds)
             {
                 var invoice = await _invoice.GetInvoiceByIdAsync(id, cancellation);
-                if (invoice != null)
-                    invoices.Add(invoice);
+                if (invoice != null) invoices.Add(invoice);
             }
 
             if (!invoices.Any())
                 return NotFound("No valid invoices found.");
 
-            return new ViewAsPdf("PrintMultiple", invoices)
-            {
-                FileName = $"Invoices_{DateTime.Now:yyyyMMdd_HHmm}.pdf",
-                PageSize = Rotativa.AspNetCore.Options.Size.A4,
-                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait
-            };
+            ViewData["SeparatePages"] = separatePages; // control page break
+            return View("PrintMultiple", invoices);
         }
+
+
     }
+
 }
+

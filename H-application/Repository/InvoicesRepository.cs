@@ -32,23 +32,16 @@ namespace H_application.Repository
         }
 
 
+
         //public async Task<InvoicesDtoCreate> CreateInvoiceAsync(int reservationId, CancellationToken cancellation = default)
         //{
-        //    var reservation = await _context.Reservations.FirstOrDefaultAsync(i => i.ReservationId == reservationId, cancellation);
+        //    var reservation = await _context.Reservations
+        //        .FirstOrDefaultAsync(i => i.ReservationId == reservationId, cancellation);
         //    if (reservation == null)
         //        throw new Exception("Reservation not found!");
 
         //    var payment = await _context.Payments
-        //        .Join(_context.Reservations,
-        //              p => p.PaymentId,
-        //              r => r.PaymentId,
-        //              (p, r) => new { Payment = p, Reservation = r })
-        //        .Where(x => x.Reservation.ReservationId == reservationId)
-        //        .Select(x => x.Payment)
-        //        .OrderByDescending(p => p.PaymentDate)
-        //        .FirstOrDefaultAsync(cancellation);
-
-
+        //        .FirstOrDefaultAsync(p => p.PaymentId == reservation.PaymentId, cancellation);
         //    if (payment == null)
         //        throw new Exception("No Payment Found for this Reservation.");
 
@@ -71,37 +64,55 @@ namespace H_application.Repository
         //    await CreateInvoiceAsync(invoice, cancellation);
         //    return invoice;
         //}
+
         public async Task<InvoicesDtoCreate> CreateInvoiceAsync(int reservationId, CancellationToken cancellation = default)
         {
+            // 1️⃣ Get reservation
             var reservation = await _context.Reservations
-                .FirstOrDefaultAsync(i => i.ReservationId == reservationId, cancellation);
+                .Include(r => r.ReservationServices) // include services
+                    .ThenInclude(rs => rs.Service)
+                .Include(r => r.rooms)
+                    .ThenInclude(rm => rm.roomType)
+                .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellation);
+
             if (reservation == null)
                 throw new Exception("Reservation not found!");
 
+            // 2️⃣ Get payment
             var payment = await _context.Payments
                 .FirstOrDefaultAsync(p => p.PaymentId == reservation.PaymentId, cancellation);
             if (payment == null)
                 throw new Exception("No Payment Found for this Reservation.");
 
+            // 3️⃣ Calculate totals
+            decimal roomPrice = reservation?.TotalPrice ?? 0; // your room price
+            decimal servicesTotal = reservation!.ReservationServices?.Sum(rs => rs.TotalPrice) ?? 0;
+
+            decimal subtotal = roomPrice + servicesTotal;
+
             var taxValue = await _system.GetValueAsync("TaxRate", cancellation);
             var taxRate = decimal.TryParse(taxValue, out var parsedTax) ? parsedTax : 0.10m;
 
-            var tax = reservation.TotalPrice * taxRate;
-            var grandTotal = reservation.TotalPrice + tax;
+            decimal tax = subtotal * taxRate;
+            decimal grandTotal = subtotal + tax;
 
+            // 4️⃣ Create invoice DTO
             var invoice = new InvoicesDtoCreate
             {
                 ReservationId = reservationId,
                 PaymentId = payment.PaymentId,
-                TotalAmount = reservation.TotalPrice,
+                TotalAmount = subtotal,
                 TaxAmount = tax,
                 GrandTotal = grandTotal,
                 IssuedDate = DateTime.UtcNow,
             };
 
+            // 5️⃣ Save invoice
             await CreateInvoiceAsync(invoice, cancellation);
+
             return invoice;
         }
+
 
         public async Task<List<InvoicesResponse>> GetAllInvoicesAsync(CancellationToken cancellationToken = default)
         {

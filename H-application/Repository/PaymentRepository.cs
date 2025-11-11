@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using H_application.DTOs.Payment;
+using H_application.Repository;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
@@ -24,29 +25,18 @@ namespace H_Reservation.Service
             _invoicesService = invoicesService;
         }
 
+
         //public async Task<bool> CreatePaymentAsync(PaymentDtoCreate payment, CancellationToken cancellationToken)
         //{
-        //    var entity = payment.Adapt<Payment>();
-
-        //    await _context.Payments.AddAsync(entity, cancellationToken);
-        //    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-
-        //    if (result && payment.PaymentStatus == "Completed" && payment.ReservationId.HasValue)
-        //    {
-        //        await _invoicesService.CreateInvoiceAsync(payment.ReservationId.Value, cancellationToken);
-        //    }
-
-        //    return result;
-        //}
-        //public async Task<bool> CreatePaymentAsync(PaymentDtoCreate payment, CancellationToken cancellationToken)
-        //{
-        //    if(payment.ReservationId == null || !payment.ReservationId.Any())
+        //    if (payment.ReservationId == null || !payment.ReservationId.Any())
         //        return false;
 
         //    using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+
         //    try
         //    {
-        //        foreach(var reservationId in payment.ReservationId)
+        //        // Single reservation case
+        //        if (payment.ReservationId.Count == 1)
         //        {
         //            var entity = new Payment
         //            {
@@ -55,26 +45,66 @@ namespace H_Reservation.Service
         //                RefundDate = payment.RefundDate,
         //                RefundAmount = payment.RefundAmount,
         //                Currency = payment.Currency,
-        //                Amount = payment.Amount / payment.ReservationId.Count, // Divide amount equally
+        //                Amount = payment.Amount,
         //                PaymentStatus = payment.PaymentStatus
         //            };
+
         //            await _context.Payments.AddAsync(entity, cancellationToken);
+        //            await _context.SaveChangesAsync(cancellationToken);
+
+        //            var reservation = await _context.Reservations
+        //                .FirstOrDefaultAsync(r => r.ReservationId == payment.ReservationId.First(), cancellationToken);
+
+        //            if (reservation != null)
+        //                reservation.PaymentId = entity.PaymentId;
+
+        //            await _context.SaveChangesAsync(cancellationToken);
+
+        //            if (payment.PaymentStatus == "Completed")
+        //                await _invoicesService.CreateInvoiceAsync(reservation!.ReservationId, cancellationToken);
         //        }
-        //        await _context.SaveChangesAsync(cancellationToken);
-        //        if (payment.PaymentStatus == "Completed")
+        //        else // Multiple reservations
         //        {
-        //            foreach (var reservationId in payment.ReservationId)
+        //            // Make sure you have a matching list of amounts
+        //            for (int i = 0; i < payment.ReservationId.Count; i++)
         //            {
-        //                await _invoicesService.CreateInvoiceAsync(reservationId, cancellationToken);
+        //                var reservationId = payment.ReservationId[i];
+        //                var amountForReservation = payment.ReservationAmount[i]; // use actual amount for this reservation
+
+        //                var entity = new Payment
+        //                {
+        //                    PaymentMethodId = payment.PaymentMethodId,
+        //                    PaymentDate = payment.PaymentDate,
+        //                    RefundDate = payment.RefundDate,
+        //                    RefundAmount = payment.RefundAmount,
+        //                    Currency = payment.Currency,
+        //                    Amount = amountForReservation,
+        //                    PaymentStatus = payment.PaymentStatus
+        //                };
+
+        //                await _context.Payments.AddAsync(entity, cancellationToken);
+        //                await _context.SaveChangesAsync(cancellationToken);
+
+        //                var reservation = await _context.Reservations
+        //                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellationToken);
+
+        //                if (reservation != null)
+        //                    reservation.PaymentId = entity.PaymentId;
+
+        //                await _context.SaveChangesAsync(cancellationToken);
+
+        //                if (payment.PaymentStatus == "Completed")
+        //                    await _invoicesService.CreateInvoiceAsync(reservationId, cancellationToken);
         //            }
         //        }
-        //            await transaction.CommitAsync(cancellationToken);
+
+        //        await transaction.CommitAsync(cancellationToken);
         //        return true;
         //    }
-        //    catch (Exception ex) 
-        //    { 
+        //    catch
+        //    {
         //        await transaction.RollbackAsync(cancellationToken);
-        //        return false;
+        //        throw;
         //    }
         //}
         public async Task<bool> CreatePaymentAsync(PaymentDtoCreate payment, CancellationToken cancellationToken)
@@ -86,9 +116,23 @@ namespace H_Reservation.Service
 
             try
             {
-                // Single reservation case
                 if (payment.ReservationId.Count == 1)
                 {
+                    var reservationId = payment.ReservationId.First();
+                    var reservation = await _context.Reservations
+                        .Include(r => r.rooms)
+                            .ThenInclude(rm => rm!.roomType)
+                        .Include(r => r.ReservationServices)
+                        .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellationToken);
+
+                    if (reservation == null)
+                        return false;
+
+                    // 🧮 Calculate total: room + extra services
+                    var roomPrice = reservation.rooms?.roomType?.PricePerNight ?? 0;
+                    var serviceTotal = reservation.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0;
+                    var totalAmount = roomPrice + serviceTotal;
+
                     var entity = new Payment
                     {
                         PaymentMethodId = payment.PaymentMethodId,
@@ -96,31 +140,36 @@ namespace H_Reservation.Service
                         RefundDate = payment.RefundDate,
                         RefundAmount = payment.RefundAmount,
                         Currency = payment.Currency,
-                        Amount = payment.Amount, // total amount for one reservation
+                        Amount = totalAmount,
                         PaymentStatus = payment.PaymentStatus
                     };
 
                     await _context.Payments.AddAsync(entity, cancellationToken);
                     await _context.SaveChangesAsync(cancellationToken);
 
-                    var reservation = await _context.Reservations
-                        .FirstOrDefaultAsync(r => r.ReservationId == payment.ReservationId.First(), cancellationToken);
-
-                    if (reservation != null)
-                        reservation.PaymentId = entity.PaymentId;
-
+                    reservation.PaymentId = entity.PaymentId;
                     await _context.SaveChangesAsync(cancellationToken);
 
                     if (payment.PaymentStatus == "Completed")
-                        await _invoicesService.CreateInvoiceAsync(reservation!.ReservationId, cancellationToken);
+                        await _invoicesService.CreateInvoiceAsync(reservation.ReservationId, cancellationToken);
                 }
-                else // Multiple reservations
+                else
                 {
-                    // Make sure you have a matching list of amounts
                     for (int i = 0; i < payment.ReservationId.Count; i++)
                     {
                         var reservationId = payment.ReservationId[i];
-                        var amountForReservation = payment.ReservationAmount[i]; // use actual amount for this reservation
+                        var reservation = await _context.Reservations
+                            .Include(r => r.rooms)
+                                .ThenInclude(rm => rm!.roomType)
+                            .Include(r => r.ReservationServices)
+                            .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellationToken);
+
+                        if (reservation == null)
+                            continue;
+
+                        var roomPrice = reservation.rooms?.roomType?.PricePerNight ?? 0;
+                        var serviceTotal = reservation.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0;
+                        var totalAmount = roomPrice + serviceTotal;
 
                         var entity = new Payment
                         {
@@ -129,19 +178,14 @@ namespace H_Reservation.Service
                             RefundDate = payment.RefundDate,
                             RefundAmount = payment.RefundAmount,
                             Currency = payment.Currency,
-                            Amount = amountForReservation,
+                            Amount = totalAmount,
                             PaymentStatus = payment.PaymentStatus
                         };
 
                         await _context.Payments.AddAsync(entity, cancellationToken);
                         await _context.SaveChangesAsync(cancellationToken);
 
-                        var reservation = await _context.Reservations
-                            .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellationToken);
-
-                        if (reservation != null)
-                            reservation.PaymentId = entity.PaymentId;
-
+                        reservation.PaymentId = entity.PaymentId;
                         await _context.SaveChangesAsync(cancellationToken);
 
                         if (payment.PaymentStatus == "Completed")
@@ -158,7 +202,6 @@ namespace H_Reservation.Service
                 throw;
             }
         }
-
 
 
         public async Task<bool> CreatePaymentForReservationAsync(PaymentDtoCreate dto, CancellationToken cancellationToken)
@@ -308,28 +351,7 @@ namespace H_Reservation.Service
             return result ?? throw new Exception("CheckOut Not Found");
         }
 
-        //public async Task<PaymentDtoUpdate> GetPaymentByIdAsync(int id, CancellationToken cancellationToken)
-        //{
-        //    var payment = await _context.Payments
-        //        .AsNoTracking()
-        //        .Include(p => p.Reservation)
-        //            .ThenInclude(r => r!.guest)
-        //        .Include(p => p.Reservation)
-        //            .ThenInclude(r => r!.rooms)
-        //        .FirstOrDefaultAsync(p => p.PaymentId == id, cancellationToken);
 
-        //    if (payment == null) return null!;
-
-        //    var dto = payment.Adapt<PaymentDtoUpdate>();
-
-        //    dto.GuestRoomInfo = payment.Reservation != null
-        //        ? $"Guest: {payment.Reservation.guest!.FirstName} {payment.Reservation.guest.LastName}, Room: {payment.Reservation.rooms!.RoomNumber}, Total: {payment.Reservation.TotalPrice:C}"
-        //        : string.Empty;
-
-        //    dto.ReservationId = payment.ReservationId;
-
-        //    return dto;
-        //}
         //public async Task<PaymentDtoUpdate?> GetPaymentByIdAsync(int id, CancellationToken cancellationToken)
         //{
         //    var payment = await _context.Payments
@@ -344,21 +366,24 @@ namespace H_Reservation.Service
 
         //    var dto = payment.Adapt<PaymentDtoUpdate>();
 
-        //    var firstReservation = payment.Reservation?.FirstOrDefault();
-        //    if (firstReservation != null)
+
+        //    dto.ReservationId = payment.Reservation?.Select(r => r.ReservationId).ToList();
+
+        //    // Optional: create a friendly string with all guests/rooms
+        //    if (payment.Reservation != null && payment.Reservation.Any())
         //    {
-        //        var guest = firstReservation.guest;
-        //        var room = firstReservation.rooms;
-        //        dto.GuestRoomInfo = $"Guest: {guest?.FirstName} {guest?.LastName ?? ""}, " +
-        //                            $"Room: {room?.RoomNumber ?? "N/A"}, " +
-        //                            $"Total: {firstReservation.TotalPrice:C}";
+        //        dto.GuestRoomInfo = string.Join(" | ", payment.Reservation.Select(r =>
+        //        {
+        //            var guest = r.guest;
+        //            var room = r.rooms;
+        //            var total = r.TotalPrice;
+        //            return $"Guest: {guest?.FirstName} {guest?.LastName ?? ""}, Room: {room?.RoomNumber ?? "N/A"}, Total: {total:C}";
+        //        }));
         //    }
         //    else
         //    {
         //        dto.GuestRoomInfo = "No Reservations";
         //    }
-
-
 
         //    return dto;
         //}
@@ -370,33 +395,50 @@ namespace H_Reservation.Service
                     .ThenInclude(r => r.guest)
                 .Include(p => p.Reservation!)
                     .ThenInclude(r => r.rooms)
+                        .ThenInclude(rm => rm!.roomType)
+                .Include(p => p.Reservation!)
+                    .ThenInclude(r => r.ReservationServices) // Include extra services
+                        .ThenInclude(rs => rs.Service)
                 .FirstOrDefaultAsync(p => p.PaymentId == id, cancellationToken);
 
             if (payment == null) return null;
 
             var dto = payment.Adapt<PaymentDtoUpdate>();
 
-            
             dto.ReservationId = payment.Reservation?.Select(r => r.ReservationId).ToList();
 
-            // Optional: create a friendly string with all guests/rooms
+            // Calculate total including services
+            decimal totalAmount = 0;
             if (payment.Reservation != null && payment.Reservation.Any())
             {
-                dto.GuestRoomInfo = string.Join(" | ", payment.Reservation.Select(r =>
+                var guestRoomInfoList = new List<string>();
+
+                foreach (var res in payment.Reservation)
                 {
-                    var guest = r.guest;
-                    var room = r.rooms;
-                    var total = r.TotalPrice;
-                    return $"Guest: {guest?.FirstName} {guest?.LastName ?? ""}, Room: {room?.RoomNumber ?? "N/A"}, Total: {total:C}";
-                }));
+                    var roomPrice = res.rooms?.roomType?.PricePerNight ?? 0;
+                    var serviceTotal = res.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0;
+                    var subtotal = roomPrice + serviceTotal;
+
+                    totalAmount += subtotal;
+
+                    var guestName = res.guest != null ? $"{res.guest.FirstName} {res.guest.LastName}" : "Unknown Guest";
+                    var roomNumber = res.rooms?.RoomNumber ?? "N/A";
+
+                    guestRoomInfoList.Add($"Guest: {guestName}, Room: {roomNumber}, Total: {subtotal:C}");
+                }
+
+                dto.Amount = totalAmount;
+                dto.GuestRoomInfo = string.Join(" | ", guestRoomInfoList);
             }
             else
             {
                 dto.GuestRoomInfo = "No Reservations";
+                dto.Amount = payment.Amount;
             }
 
             return dto;
         }
+
 
         public async Task<int> GetPaymentsCountByStatusAsync(string status, CancellationToken cancellationToken)
         {
@@ -422,58 +464,86 @@ namespace H_Reservation.Service
             return await _context.SaveChangesAsync() > 0;
         }
 
+
         //public async Task<bool> UpdatePaymentWithInvoiceAsync(PaymentDtoUpdate dto, CancellationToken cancellation = default)
         //{
+
         //    var payment = await _context.Payments
+        //        .Include(p => p.Reservation)
         //        .FirstOrDefaultAsync(p => p.PaymentId == dto.PaymentId, cancellation);
 
         //    if (payment == null)
         //        throw new Exception("Payment not found");
+
+
         //    payment.PaymentStatus = dto.PaymentStatus;
         //    payment.Amount = dto.Amount;
         //    payment.PaymentMethodId = dto.PaymentMethodId;
         //    payment.RefundAmount = dto.RefundAmount ?? payment.RefundAmount;
         //    payment.RefundDate = dto.RefundDate ?? payment.RefundDate;
         //    payment.PaymentDate = dto.PaymentDate ?? payment.PaymentDate;
-        //    payment.ReservationId = dto.ReservationId ?? payment.ReservationId;
         //    payment.Currency = dto.Currency ?? payment.Currency;
 
         //    _context.Payments.Update(payment);
         //    await _context.SaveChangesAsync(cancellation);
 
 
-        //    if (payment.PaymentStatus == "Completed" && payment.ReservationId.HasValue)
+        //    if (payment.PaymentStatus == "Completed")
         //    {
-        //        await _invoicesService.CreateInvoiceAsync(payment.ReservationId.Value, cancellation);
+        //        var linkedReservations = await _context.Reservations
+        //            .Where(r => r.PaymentId == payment.PaymentId)
+        //            .ToListAsync(cancellation);
+
+        //        foreach (var reservation in linkedReservations)
+        //        {
+
+        //            var hasInvoice = await _context.Invoices
+        //                .AnyAsync(i => i.ReservationId == reservation.ReservationId, cancellation);
+
+        //            if (!hasInvoice)
+        //            {
+        //                await _invoicesService.CreateInvoiceAsync(reservation.ReservationId, cancellation);
+        //            }
+        //        }
         //    }
 
         //    return true;
         //}
-
-
         public async Task<bool> UpdatePaymentWithInvoiceAsync(PaymentDtoUpdate dto, CancellationToken cancellation = default)
         {
-            
             var payment = await _context.Payments
                 .Include(p => p.Reservation)
+                    .ThenInclude(r => r.ReservationServices) // Include extra services
                 .FirstOrDefaultAsync(p => p.PaymentId == dto.PaymentId, cancellation);
 
             if (payment == null)
                 throw new Exception("Payment not found");
 
-           
+            // Update payment fields
             payment.PaymentStatus = dto.PaymentStatus;
-            payment.Amount = dto.Amount;
             payment.PaymentMethodId = dto.PaymentMethodId;
             payment.RefundAmount = dto.RefundAmount ?? payment.RefundAmount;
             payment.RefundDate = dto.RefundDate ?? payment.RefundDate;
             payment.PaymentDate = dto.PaymentDate ?? payment.PaymentDate;
             payment.Currency = dto.Currency ?? payment.Currency;
 
+            // Recalculate total including extra services
+            decimal totalAmount = 0;
+            if (payment.Reservation != null && payment.Reservation.Any())
+            {
+                foreach (var res in payment.Reservation)
+                {
+                    var roomPrice = res.rooms?.roomType?.PricePerNight ?? 0;
+                    var serviceTotal = res.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0;
+                    totalAmount += roomPrice + serviceTotal;
+                }
+            }
+            payment.Amount = totalAmount;
+
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync(cancellation);
 
-            
+            // Create invoices if completed
             if (payment.PaymentStatus == "Completed")
             {
                 var linkedReservations = await _context.Reservations
@@ -482,19 +552,17 @@ namespace H_Reservation.Service
 
                 foreach (var reservation in linkedReservations)
                 {
-                   
                     var hasInvoice = await _context.Invoices
                         .AnyAsync(i => i.ReservationId == reservation.ReservationId, cancellation);
 
                     if (!hasInvoice)
-                    {
                         await _invoicesService.CreateInvoiceAsync(reservation.ReservationId, cancellation);
-                    }
                 }
             }
 
             return true;
         }
+
 
     }
 

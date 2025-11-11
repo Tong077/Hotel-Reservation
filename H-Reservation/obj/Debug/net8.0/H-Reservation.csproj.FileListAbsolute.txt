@@ -160,3 +160,4 @@ D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.genruntime
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\ref\H-Reservation.dll
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.MvcApplicationPartsAssemblyInfo.cs
 D:\Asp_net\H-Reservation\H-Reservation\obj\Debug\net8.0\H-Reservation.sourcelink.json
+D:\Asp_net\H-Reservation\H-Reservation\bin\Debug\net8.0\libman.json

@@ -1,4 +1,5 @@
 ﻿using H_application.DTOs.Payment;
+using H_application.DTOs.PaymentDto;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
@@ -110,62 +111,95 @@ namespace H_Reservation.Controllers
             var paymentMethods = await _paymethod.GetAllPaymentMethods(default);
             ViewBag.PaymentMethods = new SelectList(paymentMethods, "PaymentMethodId", "Name", result.PaymentMethodId);
 
-            // Get all reservations
-            var reservations = _context.Reservations
-                .Select(r => new
+            // Load reservations
+            var reservations = await _context.Reservations
+                .Include(r => r.guest)
+                .Include(r => r.rooms)
+                    .ThenInclude(rm => rm!.roomType)
+                .Include(r => r.ReservationServices)
+                    .ThenInclude(rs => rs.Service)
+                .Where(r => r.PaymentId == null || r.PaymentId == result.PaymentId)
+                .ToListAsync();
+
+            var reservationList = reservations.Select(r =>
+            {
+                var guestName = r.guest != null ? $"{r.guest.FirstName} {r.guest.LastName}" : "Unknown Guest";
+                var roomNumber = r.rooms?.RoomNumber ?? "Unknown Room";
+                var roomPrice = r.rooms?.roomType?.PricePerNight ?? 0;
+                var servicesTotal = r.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0;
+                var total = roomPrice + servicesTotal;
+                var currency = r.rooms?.roomType?.Currency ?? r.Currency ?? "USD";
+
+                return new ReservationForPaymentDto
                 {
-                    r.ReservationId,
-                    GuestFullName = r.guest != null
-                        ? r.guest.FirstName + " " + r.guest.LastName
-                        : "Unknown Guest",
+                    ReservationId = r.ReservationId,
+                    GuestFullName = guestName,
+                    RoomNumber = roomNumber,
+                    TotalPrice = total,
+                    Currency = currency,
+                    DisplayTotal = currency == "USD" ? $"${total:N2}" : $"៛{total:N0}"
+                };
+            }).ToList();
 
-                    RoomNumber = r.rooms != null
-                        ? r.rooms.RoomNumber ?? "Unknown"
-                        : "Unknown Room",
+            ViewBag.Reservations = reservationList;
+            ViewBag.SelectedReservationIds = result.ReservationId ?? new List<int>();
 
-                    Currency = r.rooms != null && r.rooms.roomType != null
-                        ? r.rooms.roomType.Currency
-                        : r.Currency,
-
-                    TotalPrice = r.rooms != null && r.rooms.roomType != null
-                        ? r.rooms.roomType.PricePerNight
-                        : r.TotalPrice ?? 0
-                })
-                .AsEnumerable()
-                .Select(r => new
-                {
-                    r.ReservationId,
-                    r.GuestFullName,
-                    r.RoomNumber,
-                    DisplayTotal = r.Currency == "USD"
-                        ? $"${r.TotalPrice:N2}"
-                        : $"៛{r.TotalPrice:N0}",
-                    r.Currency,
-                    r.TotalPrice
-                })
-                .ToList();
-
-
-            var selectedReservationIds = result.ReservationId ?? new List<int>();
-
-
-            ViewBag.Reservations = reservations;
-            ViewBag.SelectedReservationIds = selectedReservationIds;
+            // Calculate initial total
+            result.Amount = reservationList
+                .Where(r => result.ReservationId.Contains(r.ReservationId))
+                .Sum(r => r.TotalPrice);
 
             return View("Edit", result);
         }
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> Update(PaymentDtoUpdate update)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        await LoadViewBagsAsync(update.PaymentMethodId);
+        //        return View("Edit", update);
+        //    }
+
+        //    var existingPayment = await _service.GetPaymentByIdAsync(update.PaymentId, default);
+        //    if (existingPayment == null)
+        //    {
+        //        TempData["toastr-type"] = "error";
+        //        TempData["toastr-message"] = "Payment not found.";
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    if (existingPayment.PaymentStatus == "Completed")
+        //    {
+        //        TempData["toastr-type"] = "warning";
+        //        TempData["toastr-message"] = "Completed payments cannot be modified.";
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    var success = await _service.UpdatePaymentWithInvoiceAsync(update, default);
+
+        //    if (success)
+        //    {
+        //        TempData["toastr-type"] = "success";
+        //        TempData["toastr-message"] = "Payment updated successfully!";
+        //        return RedirectToAction("Index");
+        //    }
+
+        //    TempData["toastr-type"] = "error";
+        //    TempData["toastr-message"] = "Failed to update payment.";
+        //    await LoadViewBagsAsync(update.PaymentMethodId);
+        //    return View("Edit", update);
+        //}
         [HttpPost]
         public async Task<IActionResult> Update(PaymentDtoUpdate update)
         {
-
             if (!ModelState.IsValid)
             {
                 await LoadViewBagsAsync(update.PaymentMethodId);
                 return View("Edit", update);
             }
 
-            // ✅ Check if payment exists
             var existingPayment = await _service.GetPaymentByIdAsync(update.PaymentId, default);
             if (existingPayment == null)
             {
@@ -174,7 +208,6 @@ namespace H_Reservation.Controllers
                 return RedirectToAction("Index");
             }
 
-
             if (existingPayment.PaymentStatus == "Completed")
             {
                 TempData["toastr-type"] = "warning";
@@ -182,10 +215,22 @@ namespace H_Reservation.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Recalculate Amount from selected reservations
+            var selectedReservations = await _context.Reservations
+                .Include(r => r.rooms)
+                    .ThenInclude(rm => rm!.roomType)
+                .Include(r => r.ReservationServices)
+                .Where(r => update.ReservationId.Contains(r.ReservationId))
+                .ToListAsync();
 
-            var result = await _service.UpdatePaymentWithInvoiceAsync(update, default);
+            update.Amount = selectedReservations.Sum(r =>
+                (r.rooms?.roomType?.PricePerNight ?? 0) +
+                (r.ReservationServices?.Sum(rs => rs.TotalPrice ?? 0) ?? 0)
+            );
 
-            if (result)
+            var success = await _service.UpdatePaymentWithInvoiceAsync(update, default);
+
+            if (success)
             {
                 TempData["toastr-type"] = "success";
                 TempData["toastr-message"] = "Payment updated successfully!";
@@ -196,9 +241,8 @@ namespace H_Reservation.Controllers
             TempData["toastr-message"] = "Failed to update payment.";
             await LoadViewBagsAsync(update.PaymentMethodId);
             return View("Edit", update);
-
-
         }
+
 
 
         //[HttpPost]
@@ -430,92 +474,91 @@ namespace H_Reservation.Controllers
 
 
 
+        //private async Task LoadRoom()
+        //{
+        //    var reservations = await _context.Reservations
+        //        .Include(r => r.guest)
+        //        .Include(r => r.rooms)
+        //            .ThenInclude(rm => rm!.roomType)
+        //        .Include(r => r.Payment) // ✅ Include Payment explicitly
+        //        .Where(r => r.Payment == null || r.Payment.PaymentStatus != "Completed")
+        //        .ToListAsync();
+
+        //    var grouped = reservations.Select(r =>
+        //    {
+        //        var guestName = r.guest != null
+        //            ? $"{r.guest.FirstName} {r.guest.LastName}"
+        //            : "Unknown Guest";
+
+        //        var roomNumber = r.rooms?.RoomNumber ?? "Unknown Room";
+        //        var totalAmount = r.rooms?.roomType?.PricePerNight ?? 0;
+        //        var currency = r.rooms?.roomType?.Currency ?? r.Currency ?? "USD";
+
+        //        var displayTotal = currency == "USD"
+        //            ? $"${totalAmount:N2}"
+        //            : $"៛{totalAmount:N0}";
+
+        //        return new
+        //        {
+        //            r.ReservationId,
+        //            GuestFullName = guestName,
+        //            RoomNumber = roomNumber,
+        //            DisplayTotal = displayTotal,
+        //            TotalAmount = totalAmount,
+        //            Currency = currency
+        //        };
+        //    }).ToList();
+
+        //    ViewBag.Reservations = grouped;
+        //}
         private async Task LoadRoom()
         {
             var reservations = await _context.Reservations
                 .Include(r => r.guest)
                 .Include(r => r.rooms)
                     .ThenInclude(rm => rm!.roomType)
-                .Where(r => r.PaymentId == null || r.Payment!.PaymentStatus != "Completed")
+                .Include(r => r.ReservationServices) // ✅ include services
+                .Include(r => r.Payment)
+                .Where(r => r.Payment == null || r.Payment.PaymentStatus != "Completed")
                 .ToListAsync();
 
-            var grouped = reservations
-                .Select(r => new
+            var grouped = reservations.Select(r =>
+            {
+                var guestName = r.guest != null
+                    ? $"{r.guest.FirstName} {r.guest.LastName}"
+                    : "Unknown Guest";
+
+                var roomNumber = r.rooms?.RoomNumber ?? "Unknown Room";
+
+                // 🧮 Get room + services total
+                var roomPrice = r.rooms?.roomType?.PricePerNight ?? 0;
+                var serviceTotal = r.ReservationServices?.Sum(s => s.TotalPrice ?? 0) ?? 0;
+                var totalAmount = roomPrice + serviceTotal;
+
+                var currency = r.rooms?.roomType?.Currency ?? r.Currency ?? "USD";
+
+                // 💵 Display format
+                var displayTotal = currency == "USD"
+                    ? $"${totalAmount:N2}"
+                    : $"៛{totalAmount:N0}";
+                var displayTotalKhr = currency == "KHR" ? $"៛{totalAmount:N0}" : $"${totalAmount:N2}";
+
+                return new
                 {
                     r.ReservationId,
-                    GuestFullName = r.guest != null
-                        ? $"{r.guest.FirstName} {r.guest.LastName}"
-                        : "Unknown Guest",
-                    RoomNumber = r.rooms?.RoomNumber ?? "Unknown Room",
-                    TotalAmount = r.rooms?.roomType?.PricePerNight ?? 0,
-                    Currency = r.rooms?.roomType?.Currency ?? r.Currency
-                })
-                .Select(r => new
-                {
-                    r.ReservationId,
-                    r.GuestFullName,
-                    r.RoomNumber,
-                    DisplayTotal = r.Currency == "USD"
-                        ? $"${r.TotalAmount:N2}"
-                        : $"៛{r.TotalAmount:N0}",
-                    r.TotalAmount,
-                    r.Currency
-                })
-                .ToList();
+                    GuestFullName = guestName,
+                    RoomNumber = roomNumber,
+                    DisplayTotal = displayTotal,
+                    DiplayTotal = displayTotalKhr,
+                    TotalAmount = totalAmount,
+                    Currency = currency
+                };
+            }).ToList();
 
             ViewBag.Reservations = grouped;
         }
 
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetReservationAmount(int reservationId, CancellationToken cancellation)
-        //{
-        //    var firstReservation = await _context.Reservations
-        //        .Include(r => r.ReservationServices)
-        //            .ThenInclude(rs => rs.Service)
-        //        .Include(r => r.rooms)
-        //            .ThenInclude(rm => rm.roomType)
-        //        .FirstOrDefaultAsync(r => r.ReservationId == reservationId, cancellation);
-
-        //    if (firstReservation == null)
-        //        return NotFound();
-
-        //    var guestId = firstReservation.GuestId;
-        //    var checkInDate = firstReservation.CheckInDate;
-        //    var checkOutDate = firstReservation.CheckOutDate;
-
-        //    //  Get all reservations for this guest & same date range
-        //    var reservations = await _context.Reservations
-        //        .Include(r => r.ReservationServices)
-        //            .ThenInclude(rs => rs.Service)
-        //        .Include(r => r.rooms)
-        //            .ThenInclude(rm => rm.roomType)
-        //        .Where(r => r.GuestId == guestId &&
-        //                    r.CheckInDate == checkInDate &&
-        //                    r.CheckOutDate == checkOutDate)
-        //        .ToListAsync(cancellation);
-
-        //    //  Calculate total room prices
-        //    decimal totalRoomPrice = reservations.Sum(r =>
-        //        r.rooms?.roomType?.PricePerNight ?? 0);
-
-        //    //  Calculate total service prices
-        //    decimal totalServicePrice = reservations.Sum(r =>
-        //        r.ReservationServices?.Sum(rs => rs.Service?.Price ?? 0) ?? 0);
-
-        //    decimal totalAmount = totalRoomPrice + totalServicePrice;
-
-        //    //  Currency should come from reservation (no symbol)
-        //    string currency = firstReservation.Currency ?? firstReservation.rooms?.roomType?.Currency ?? "USD";
-
-        //    return Json(new
-        //    {
-        //        totalAmount,
-        //        currency
-        //    });
-        //}
-
-        
     }
 }
