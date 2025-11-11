@@ -66,10 +66,12 @@
                         <td>@item.Currency</td>
                         <td>
                             <span class="badge rounded-pill
-                                        @(item.Status == "CheckedIn" ? "bg-success" :
+                                        @(
+                                                                       item.Status == "CheckedIn" ? "bg-success" :
+                                                                       item.Status == "Confirmed" ? "bg-primary" :
+                                                                       item.Status == "CheckedOut" ? "bg-info" :
                                                                        item.Status == "Pending" ? "bg-warning text-dark" :
-                                                                       item.Status == "Cancelled" ? "bg-danger" :
-                                                                       "bg-secondary")">
+                                                                       item.Status == "Cancelled" ? "bg-danger" : "bg-secondary")">
                                 @item.Status
                             </span>
                         </td>

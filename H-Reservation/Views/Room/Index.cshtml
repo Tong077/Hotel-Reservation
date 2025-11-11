@@ -21,8 +21,8 @@
                     <option value="Maintenance">Maintenance</option>
                     <option value="Cleaning">Cleaning</option>
                 </select>
-                <button type="submit" class="btn btn-success">
-                    Check Box and Click Apply
+                <button type="submit" class="btn btn-sm btn-info">
+                    Click Apply Status Change
                 </button>
             </form>
         </div>
@@ -126,7 +126,28 @@
     </div>
 </div>
 
-<!-- GLightbox + Select All Script -->
+@* <!-- GLightbox + Select All Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            zoomable: true,
+            closeButton: true,
+            keyboardNavigation: true,
+            openEffect: 'fade',
+            closeEffect: 'fade'
+        });
+
+        // Select all checkboxes
+        const selectAll = document.getElementById("selectAll");
+        selectAll.addEventListener("change", function () {
+            const checkboxes = document.querySelectorAll('input[name="selectedRoomIds"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    });
+</script> *@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const lightbox = GLightbox({

@@ -1,8 +1,10 @@
 ﻿using H_application.DTOs.ReservationServicesDto;
 using H_application.DTOs.ServicesDto;
 using H_application.Service;
+using H_Domain.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace H_Reservation.Controllers
 {
@@ -11,11 +13,13 @@ namespace H_Reservation.Controllers
         private readonly IReservationServicesService _reservationService;
         private readonly IServicesService _service;
         private readonly IReservationService _reservation;
-        public ReservationServicesController(IReservationServicesService reservationService, IServicesService service, IReservationService reservation)
+        private readonly EntityContext _Context;
+        public ReservationServicesController(IReservationServicesService reservationService, IServicesService service, IReservationService reservation, EntityContext context)
         {
             _reservationService = reservationService;
             _service = service;
             _reservation = reservation;
+            _Context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -107,24 +111,24 @@ namespace H_Reservation.Controllers
         }
         private async Task LoadItem()
         {
-            var service = await _service.GetallService();
+            var services = await _Context.Services
+                .Where(s => s.IsActive == true)
+                .OrderBy(s => s.ServiceName)
+                .ToListAsync();
 
-            var servicelist = service.Select(s =>
+            var servicelist = services.Select(s => new
             {
-                var servicePrice = s.Price;
-                var serviceName = s.ServiceName;
-                return new
-                {
-                    s.ServiceId,
-                    DisplayText = $"Service Name: {serviceName} | Price: {servicePrice}"
-                };
+                s.ServiceId,
+                DisplayText = $"Service Name: {s.ServiceName} | Price: {s.Price}"
             }).ToList();
+
             ViewBag.Service = new SelectList(servicelist, "ServiceId", "DisplayText");
+
 
             var reservations = await _reservation.GetAllReservationAsync("", default);
             var reservationSelectList = reservations.Select(r =>
             {
-                var room = r.Rooms?.FirstOrDefault(); // take the first room
+                var room = r.Rooms?.FirstOrDefault();
                 var roomNumber = room?.RoomNumber ?? "N/A";
                 var roomTypeName = room?.RoomTypeName ?? "N/A";
 

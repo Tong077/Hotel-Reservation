@@ -78,6 +78,8 @@ namespace H_Reservation.Service
                             "Confirmed" => "Occupied",
                             "Pending" => "Reserved",
                             "Cancelled" => "Available",
+                            "CheckedIn" => "Occupied",
+                            "CheckOut" => "Cleaning",
                             _ => room.Status
                         };
                         _context.Rooms.Update(room);
@@ -517,5 +519,7 @@ namespace H_Reservation.Service
             }
             return calendarData;
         }
+
+        
     }
 }

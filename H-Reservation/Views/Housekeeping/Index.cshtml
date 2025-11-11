@@ -13,10 +13,8 @@
 
 
             <form id="bulkStatusForm" asp-action="BulkUpdateStatus" asp-controller="Housekeeping" method="post" class="form-inline">
-                <button type="submit" class="btn btn-sm btn-info">
-                    Click Apply Status Change
-                </button>
-                <select name="status" class="form-control form-control-sm ml-2" required>
+                
+                <select name="status" class="form-control form-control-sm mr-2" required>
 
                     <option value="">Select status...</option>
                     <option value="Available">Available</option>
@@ -24,7 +22,9 @@
                     <option value="Cleaning">Cleaning</option>
                 </select>
 
-                
+                <button type="submit" class="btn btn-sm btn-info">
+                    Click Apply Status Change
+                </button>
             </form>
         </div>
         <div class="table-responsive">

@@ -498,10 +498,6 @@ namespace H_Reservation.Controllers
             return Json(new { calendarData, calendarStart });
         }
 
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> UpdateStatus([FromBody] SwitchRoomRequest request, CancellationToken cancellationToken)
         {
@@ -540,13 +536,15 @@ namespace H_Reservation.Controllers
             };
 
             _context.Reservations.Add(newReservation);
-            var room = await _context.Rooms.FindAsync(new object[] { reservation!.RoomId }, cancellationToken);
+            var room = await _context.Rooms.FindAsync(new object[] { reservation.RoomId }, cancellationToken);
             if(room != null)
             {
                 room.Status = reservation.Status switch
                 {
                     "Confirmed" => "Occupied",
+                    "CheckedIn" => "Occupied",
                     "Pending" => "Reserved",
+                    "CheckedOut" => "Cleaning",
                     "Cancelled" => "Available",
                     _ => room.Status
                 };
