@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity.Infrastructure; 
+﻿using System.Data.Entity.Infrastructure;
 using System.Web.Mvc;
 
 namespace H_application.Error

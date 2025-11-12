@@ -1,6 +1,4 @@
-﻿using H_application.DTOs.GuestDto;
-using H_application.DTOs.HotelDto;
-using H_Domain.Models;
+﻿using H_application.DTOs.HotelDto;
 
 namespace H_application.Service
 {
@@ -12,6 +10,6 @@ namespace H_application.Service
 
         Task<IEnumerable<HotelResponse>> GetAllHotelAsync(CancellationToken cancellationToken);
         Task<HotelDtoUpdate> GetHotelByIdAsync(int Id, CancellationToken cancellationToken);
-       
+
     }
 }

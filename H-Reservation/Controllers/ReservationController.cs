@@ -5,12 +5,9 @@ using H_application.Service;
 using H_Application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using static System.Web.Razor.Parser.SyntaxConstants;
 
 namespace H_Reservation.Controllers
 {
@@ -229,7 +226,7 @@ namespace H_Reservation.Controllers
                 return View("Edit", reservationDto);
             }
         }
-       
+
 
         [HttpGet]
         public async Task<IActionResult> Delete(int Id)
@@ -394,7 +391,7 @@ namespace H_Reservation.Controllers
             return View("GetAvailableStatusRoom", rooms);
         }
 
-       
+
 
         private async Task LoadTotalRevenuse()
         {
@@ -437,7 +434,7 @@ namespace H_Reservation.Controllers
                 .FirstOrDefault(x => x.Month == currentMonth)?.GrowthPercentage ?? 0;
         }
 
-        
+
         public async Task<IActionResult> _RoomCalendar(DateTime? startDate, CancellationToken cancellationToken)
         {
             var calendarData = await _reservartion.GetRoomCalendarAsync(startDate, cancellationToken);
@@ -476,7 +473,7 @@ namespace H_Reservation.Controllers
                         ReservationId = reservation?.ReservationId ?? 0,
                         Date = date,
                         RoomNumber = room.RoomNumber,
-                       
+
                         RoomType = room.roomType?.Name ?? "Unknown",
                         GuestName = reservation?.guest != null
                         ? $"{reservation.guest.FirstName} {reservation.guest.LastName}"
@@ -537,7 +534,7 @@ namespace H_Reservation.Controllers
 
             _context.Reservations.Add(newReservation);
             var room = await _context.Rooms.FindAsync(new object[] { reservation.RoomId }, cancellationToken);
-            if(room != null)
+            if (room != null)
             {
                 room.Status = reservation.Status switch
                 {

@@ -3,7 +3,6 @@ using H_application.Service;
 using H_Domain.DataContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace H_Reservation.Controllers
 {

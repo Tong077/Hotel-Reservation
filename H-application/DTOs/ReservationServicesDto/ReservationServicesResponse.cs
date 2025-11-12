@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.ReservationServicesDto
+﻿namespace H_application.DTOs.ReservationServicesDto
 {
     public class ReservationServicesResponse
     {
@@ -26,7 +19,7 @@ namespace H_application.DTOs.ReservationServicesDto
 
         public int GuestId { get; set; }
         public int RoomId { get; set; }
-        public int RoomTypeId { get; set; } 
+        public int RoomTypeId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? RoomNumber { get; set; }

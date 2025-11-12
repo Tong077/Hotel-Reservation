@@ -1,15 +1,9 @@
-﻿using Dapper;
-using H_application.DTOs.SystemSettingsDto;
+﻿using H_application.DTOs.SystemSettingsDto;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -64,7 +58,7 @@ namespace H_application.Repository
                    SettingId = s.SettingId,
                    Key = s.Key,
                    Value = s.Value,
-                   Category= s.Category,
+                   Category = s.Category,
                    Description = s.Description,
                    IsActive = s.IsActive,
                }).ToListAsync(cancellation);
@@ -106,15 +100,15 @@ namespace H_application.Repository
                 CreatedDate = setting.CreatedDate,
                 UpdatedDate = setting.UpdatedDate,
             };
-            
-           
+
+
         }
 
         public async Task<string?> GetValueAsync(string key, CancellationToken cancellationToken)
         {
             var setting = await _context.SystemSettings
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Key == key && s.IsActive == true,cancellationToken);
+                .FirstOrDefaultAsync(s => s.Key == key && s.IsActive == true, cancellationToken);
 
             return setting!.Value;
         }

@@ -1,11 +1,6 @@
 ﻿using H_Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_Domain.Configuration
 {
@@ -55,7 +50,7 @@ namespace H_Domain.Configuration
               .HasConversion<string>()
               .UseCollation("Khmer_100_CI_AI_SC_UTF8")
               .HasMaxLength(255);
-           
+
         }
     }
 }

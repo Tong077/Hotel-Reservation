@@ -15,6 +15,6 @@ namespace H_Domain.Models
 
         public bool IsActive { get; set; } = true;
 
-        
+
     }
 }

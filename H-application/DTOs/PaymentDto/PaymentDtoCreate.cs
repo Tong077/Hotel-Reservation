@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.Payment
+﻿namespace H_application.DTOs.Payment
 {
     public class PaymentDtoCreate
     {
-       public int? PaymentId { get; set; }  
-        public List <int>? ReservationId { get; set; }
-        
+        public int? PaymentId { get; set; }
+        public List<int>? ReservationId { get; set; }
+
         public int? PaymentMethodId { get; set; }
 
         public decimal? Amount { get; set; } = 00;

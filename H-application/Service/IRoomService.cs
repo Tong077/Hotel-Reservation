@@ -1,5 +1,4 @@
 ﻿using H_application.DTOs.RoomDto;
-using H_Domain.Models;
 
 namespace H_application.Service
 {
@@ -8,8 +7,8 @@ namespace H_application.Service
         Task<bool> CreateRoomAsync(RoomDtoCreate room, CancellationToken cancellationToken);
         Task<bool> UpdateRoomAsync(RoomDtoUpdate room, CancellationToken cancellationToken);
         Task<bool> DeleteRoomAsync(RoomDtoUpdate room, CancellationToken cancellation);
-        Task<RoomDtoUpdate> GetRoomByIdAsync(int Id, CancellationToken cancellationToken); 
-        Task<IEnumerable<RoomResponse>> GetAllRoomAsync(CancellationToken cancellationToken = default);  
+        Task<RoomDtoUpdate> GetRoomByIdAsync(int Id, CancellationToken cancellationToken);
+        Task<IEnumerable<RoomResponse>> GetAllRoomAsync(CancellationToken cancellationToken = default);
 
         Task<List<RoomResponse>> GetAvailableRoomsAsync(CancellationToken cancellationToken);
         Task<List<RoomResponse>> GetRoomStatusRoom(CancellationToken cancellationToken);

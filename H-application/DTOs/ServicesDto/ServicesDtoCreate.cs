@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.ServicesDto
+﻿namespace H_application.DTOs.ServicesDto
 {
     public class ServicesDtoCreate
     {
-        
+
         public string? ServiceName { get; set; }
 
 

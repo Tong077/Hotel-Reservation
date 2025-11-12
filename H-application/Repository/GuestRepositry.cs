@@ -5,8 +5,6 @@ using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Data.SqlTypes;
-using System.Runtime.CompilerServices;
 
 namespace H_application.Service
 {
@@ -38,7 +36,7 @@ namespace H_application.Service
         {
             var entity = create.Adapt<Guest>();
 
-           context!.Guests.Add(entity);
+            context!.Guests.Add(entity);
             return await context.SaveChangesAsync() > 0;
         }
 
@@ -61,7 +59,7 @@ namespace H_application.Service
         public async Task<IEnumerable<GuestResponse>> GetAllAsync(CancellationToken cancellationToken)
         {
             var guests = await context!.Guests
-                .OrderBy(g=> g.FirstName)
+                .OrderBy(g => g.FirstName)
                 .OrderBy(g => g.LastName)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
@@ -69,7 +67,7 @@ namespace H_application.Service
             return guests.Select(g => g.Adapt<GuestResponse>()).ToList();
         }
 
-        
+
 
         public async Task<(bool Success, int GuestId, string? ErrorType)> guestCreatsAsync(GuestDtoCreate create, CancellationToken cancellationToken)
         {

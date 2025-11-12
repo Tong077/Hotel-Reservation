@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.SystemSettingsDto
+﻿namespace H_application.DTOs.SystemSettingsDto
 {
     public class SystemSettingsDtoCreate
     {
-       
+
 
 
         public string? Key { get; set; }

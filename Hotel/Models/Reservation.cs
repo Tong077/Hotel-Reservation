@@ -12,7 +12,7 @@ namespace H_Domain.Models
 
 
         public int? RoomId { get; set; }
-        
+
         public DateTime? CheckInDate { get; set; }
 
         public string? Currency { get; set; }
@@ -21,7 +21,7 @@ namespace H_Domain.Models
 
         public decimal? TotalPrice { get; set; }
 
-       
+
         public string? Status { get; set; }
 
         public DateTime? CreatedAt { get; set; }
@@ -34,6 +34,6 @@ namespace H_Domain.Models
 
         public Payment? Payment { get; set; }
         public ICollection<ReservationService>? ReservationServices { get; set; }
-        
+
     }
 }

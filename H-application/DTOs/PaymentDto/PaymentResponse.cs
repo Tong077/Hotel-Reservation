@@ -1,11 +1,4 @@
-﻿using H_Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.Payment
+﻿namespace H_application.DTOs.Payment
 {
     public class PaymentResponse
     {
@@ -14,7 +7,7 @@ namespace H_application.DTOs.Payment
 
         public int? ReservationId { get; set; }
 
-       
+
         public int? PaymentMethodId { get; set; }
 
 

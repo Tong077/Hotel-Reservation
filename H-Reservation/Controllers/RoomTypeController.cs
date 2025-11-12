@@ -46,15 +46,15 @@ namespace H_Reservation.Controllers
             }
         }
         [HttpGet]
-        public async Task <IActionResult> Edit(int Id)
+        public async Task<IActionResult> Edit(int Id)
         {
             var rp = await _service.GetRoomTypeByIdAsync(Id, default);
-           if(rp == null)
+            if (rp == null)
             {
                 return View("Edit", Id);
             }
             return View("Edit", rp);
-           
+
         }
         [HttpPost]
         public async Task<IActionResult> Update(RoomTypeDtoUpdate roomtype)

@@ -1,10 +1,6 @@
-﻿using AspNetCoreGeneratedDocument;
-using H_application.DTOs.InvoicesDto;
+﻿using H_application.DTOs.InvoicesDto;
 using H_application.Service;
-using H_Domain.DataContext;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Rotativa.AspNetCore;
 
 namespace H_Reservation.Controllers
 {
@@ -28,7 +24,7 @@ namespace H_Reservation.Controllers
             return RedirectToAction(nameof(Details), new { id = invoice.InvoiceId });
         }
 
-       
+
         public async Task<IActionResult> Details(int id, CancellationToken cancellation)
         {
             var invoice = await _invoice.GetInvoiceByIdAsync(id, cancellation);
@@ -38,7 +34,7 @@ namespace H_Reservation.Controllers
             return View(invoice);
         }
 
-        
+
         public async Task<IActionResult> Print(int id, CancellationToken cancellation)
         {
             var invoice = await _invoice.GetInvoiceByIdAsync(id, cancellation);

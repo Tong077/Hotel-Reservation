@@ -1,8 +1,6 @@
-﻿using AspNetCoreGeneratedDocument;
-using H_application.DTOs.SystemSettingsDto;
+﻿using H_application.DTOs.SystemSettingsDto;
 using H_application.Service;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
 
 namespace H_Reservation.Controllers
 {
@@ -25,7 +23,7 @@ namespace H_Reservation.Controllers
         {
             return View("Create");
         }
-        [HttpPost]  
+        [HttpPost]
         public async Task<IActionResult> Store(SystemSettingsDtoCreate dto)
         {
             try
@@ -47,8 +45,8 @@ namespace H_Reservation.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Unknow",ex.Message);
-                return View("Create",dto);
+                ModelState.AddModelError("Unknow", ex.Message);
+                return View("Create", dto);
             }
         }
         [HttpGet]
@@ -59,13 +57,13 @@ namespace H_Reservation.Controllers
             if (get == null)
                 return NotFound();
 
-            return View("Edit",get);
+            return View("Edit", get);
 
         }
         [HttpPost]
         public async Task<IActionResult> Update(SystemSettingsDtoUpdate dto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View("Edit");
             }

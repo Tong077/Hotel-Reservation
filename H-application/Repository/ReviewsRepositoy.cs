@@ -4,11 +4,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -31,7 +26,7 @@ namespace H_application.Repository
         public async Task<bool> DeleteReview(ReviewsDtoUpdate dto, CancellationToken cancellationToken = default)
         {
             var entity = dto.Adapt<Review>();
-             _context.Reviews.Remove(entity);
+            _context.Reviews.Remove(entity);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -51,14 +46,14 @@ namespace H_application.Repository
         {
             var review = await _context.Reviews
                 .FirstOrDefaultAsync(r => r.ReviewId == Id, cancellationToken);
-            var entity =  review.Adapt<ReviewsDtoUpdate>();
+            var entity = review.Adapt<ReviewsDtoUpdate>();
             return entity;
         }
 
         public async Task<bool> UpdateReview(ReviewsDtoUpdate dto, CancellationToken cancellationToken = default)
         {
             var entity = dto.Adapt<Review>();
-             _context.Reviews.Update(entity);
+            _context.Reviews.Update(entity);
             return await _context.SaveChangesAsync() > 0;
         }
     }

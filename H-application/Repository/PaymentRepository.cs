@@ -1,16 +1,9 @@
-﻿using Azure.Core;
-using H_application.DTOs.Payment;
-using H_application.Repository;
+﻿using H_application.DTOs.Payment;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using System;
-using System.CodeDom;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 
 namespace H_Reservation.Service
@@ -257,7 +250,7 @@ namespace H_Reservation.Service
             return true;
         }
 
-        
+
         public async Task<bool> DeletePaymentAsync(PaymentDtoUpdate payment, CancellationToken cancellation)
         {
             var entity = await _context.Payments
@@ -273,39 +266,39 @@ namespace H_Reservation.Service
 
         public async Task<IEnumerable<PaymentResponse>> GetAllPaymentResponsesAsync(CancellationToken cancellationToken)
         {
-                            var payments = await _context.Payments
-                    .Include(p => p.PaymentMethod)
-                    .Include(p => p.Reservation!)
-                        .ThenInclude(r => r.guest)
-                    .Include(p => p.Reservation!)
-                        .ThenInclude(r => r.rooms)
-                    .AsNoTracking()
-                    .OrderBy(p => p.PaymentId)
-                    .ToListAsync(cancellationToken);
+            var payments = await _context.Payments
+    .Include(p => p.PaymentMethod)
+    .Include(p => p.Reservation!)
+        .ThenInclude(r => r.guest)
+    .Include(p => p.Reservation!)
+        .ThenInclude(r => r.rooms)
+    .AsNoTracking()
+    .OrderBy(p => p.PaymentId)
+    .ToListAsync(cancellationToken);
 
-                            var response = payments.Select(p => new PaymentResponse
-                            {
-                                PaymentId = p.PaymentId,
-                                PaymentMethodId = p.PaymentMethodId,
-                                Amount = p.Amount,
-                                Currency = p.Currency,
-                                TransactionId = p.TransactionId,
-                                PaymentStatus = p.PaymentStatus,
-                                PaymentDate = p.PaymentDate,
-                                RefundAmount = p.RefundAmount,
-                                RefundDate = p.RefundDate,
-                                PaymentMethodName = p.PaymentMethod?.Name ?? string.Empty,
+            var response = payments.Select(p => new PaymentResponse
+            {
+                PaymentId = p.PaymentId,
+                PaymentMethodId = p.PaymentMethodId,
+                Amount = p.Amount,
+                Currency = p.Currency,
+                TransactionId = p.TransactionId,
+                PaymentStatus = p.PaymentStatus,
+                PaymentDate = p.PaymentDate,
+                RefundAmount = p.RefundAmount,
+                RefundDate = p.RefundDate,
+                PaymentMethodName = p.PaymentMethod?.Name ?? string.Empty,
 
-                                TotalPrice = p.Reservation?.Sum(r => r.TotalPrice ?? 0) ?? 0,
+                TotalPrice = p.Reservation?.Sum(r => r.TotalPrice ?? 0) ?? 0,
 
-                                GuestRoomInfo = (p.Reservation != null && p.Reservation.Any())
-                                    ? string.Join(" | ", p.Reservation.Select(r =>
-                                        $"Guest: {r.guest?.FirstName} {r.guest?.LastName} | Room: {r.rooms?.RoomNumber}"))
-                                    : string.Empty
-                            });
+                GuestRoomInfo = (p.Reservation != null && p.Reservation.Any())
+                    ? string.Join(" | ", p.Reservation.Select(r =>
+                        $"Guest: {r.guest?.FirstName} {r.guest?.LastName} | Room: {r.rooms?.RoomNumber}"))
+                    : string.Empty
+            });
 
 
-                            return response;
+            return response;
         }
 
 

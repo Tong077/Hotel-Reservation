@@ -16,10 +16,10 @@ namespace H_Reservation.Service
         }
         public async Task<bool> CreatehotelAsync(HotelDtoCreate hotelDotCreate, CancellationToken cancellationToken)
         {
-            var entity = hotelDotCreate.Adapt<Hotels>();    
+            var entity = hotelDotCreate.Adapt<Hotels>();
             await _context!.Hotels.AddAsync(entity, cancellationToken);
-           return await _context.SaveChangesAsync() > 0;
-            
+            return await _context.SaveChangesAsync() > 0;
+
         }
 
         public async Task<bool> DeletehotelAsync(HotelDtoUpdate hotelDtoUpdate, CancellationToken cancellation)
@@ -27,22 +27,22 @@ namespace H_Reservation.Service
             var entity = hotelDtoUpdate.Adapt<Hotels>();
             _context!.Hotels.Remove(entity);
             return await _context.SaveChangesAsync() > 0;
-            
+
         }
 
         public async Task<IEnumerable<HotelResponse>> GetAllHotelAsync(CancellationToken cancellationToken)
         {
-             var result = await _context!.Hotels  
-                .OrderBy(h => h.Name)
-                .AsNoTracking().ToListAsync();
+            var result = await _context!.Hotels
+               .OrderBy(h => h.Name)
+               .AsNoTracking().ToListAsync();
             var hotel = result.Adapt<List<HotelResponse>>();
-            return  hotel;
+            return hotel;
         }
 
         public async Task<HotelDtoUpdate> GetHotelByIdAsync(int Id, CancellationToken cancellationToken)
         {
             var hotel = await _context!.Hotels
-                .FirstOrDefaultAsync(h=> h.HotelId ==  Id,cancellationToken);
+                .FirstOrDefaultAsync(h => h.HotelId == Id, cancellationToken);
             var hotelResponse = hotel.Adapt<HotelDtoUpdate>();
             return hotelResponse!;
         }

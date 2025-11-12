@@ -1,5 +1,4 @@
-﻿using H_application.DTOs.HousekeepingDto;
-using H_application.DTOs.ServicesDto;
+﻿using H_application.DTOs.ServicesDto;
 using H_application.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +21,7 @@ namespace H_Reservation.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-          
+
             return View("Create");
         }
         [HttpPost]
@@ -30,7 +29,7 @@ namespace H_Reservation.Controllers
         {
             if (!ModelState.IsValid)
             {
-               
+
                 return View("Create", dto);
             }
             var reslut = await _servicesService.CreateService(dto);
@@ -44,9 +43,9 @@ namespace H_Reservation.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int Id)
         {
-           ;
+            ;
 
-            var result = await _servicesService.GetServiceById(Id,default);
+            var result = await _servicesService.GetServiceById(Id, default);
             if (result == null)
             {
                 return NotFound();
@@ -61,7 +60,7 @@ namespace H_Reservation.Controllers
 
             if (!ModelState.IsValid)
             {
-               
+
                 return View("Edit", dto);
             }
             var reslut = await _servicesService.UpdateService(dto);
@@ -74,7 +73,7 @@ namespace H_Reservation.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int Id)
         {
-            
+
 
             var result = await _servicesService.GetServiceById(Id);
             if (result == null)
@@ -88,10 +87,10 @@ namespace H_Reservation.Controllers
         {
             if (!ModelState.IsValid)
             {
-               
+
                 return View("Delete", dto);
             }
-            var reslut = await  _servicesService.DeleteService(dto);
+            var reslut = await _servicesService.DeleteService(dto);
             if (reslut)
             {
                 return RedirectToAction("Index");

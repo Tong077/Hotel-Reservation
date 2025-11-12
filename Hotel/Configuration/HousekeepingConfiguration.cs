@@ -1,11 +1,6 @@
 ﻿using H_Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_Domain.Configuration
 {
@@ -48,9 +43,9 @@ namespace H_Domain.Configuration
             builder.HasOne(h => h.Room)
                .WithMany(r => r.Housekeepings)
                .HasForeignKey(h => h.RoomId)
-               .OnDelete(DeleteBehavior.Restrict); 
+               .OnDelete(DeleteBehavior.Restrict);
 
-           
+
             builder.HasOne(h => h.Employee)
                 .WithMany(e => e.HousekeepingTasks)
                 .HasForeignKey(h => h.EmployeeId)

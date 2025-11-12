@@ -2,7 +2,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 public class RoomConfig : IBaseEntityTypeConfiguration<Room>
 {
@@ -29,7 +28,7 @@ public class RoomConfig : IBaseEntityTypeConfiguration<Room>
         builder.Property(h => h.Images)
           .HasColumnName("Images")
           .HasConversion<string>()
-          
+
            ;
         builder.Property(h => h.Status)
            .HasColumnName("Status")
@@ -53,7 +52,7 @@ public class RoomConfig : IBaseEntityTypeConfiguration<Room>
      .HasForeignKey(r => r.HotelId)  // FK property
      .OnDelete(DeleteBehavior.Restrict);
 
-          
+
 
 
     }

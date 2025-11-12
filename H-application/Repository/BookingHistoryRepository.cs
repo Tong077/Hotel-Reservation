@@ -4,11 +4,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -31,7 +26,7 @@ namespace H_application.Repository
         public async Task<bool> DeleteBookingHistory(BookingHistoryDtoUpdate dto, CancellationToken cancellation = default)
         {
             var entity = dto.Adapt<BookingHistory>();
-             _context.BookingHistory.Remove(entity);
+            _context.BookingHistory.Remove(entity);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -47,7 +42,7 @@ namespace H_application.Repository
         {
             var booking = await _context.BookingHistory
                 .Include(b => b.Reservation)
-                .AsNoTracking() 
+                .AsNoTracking()
                 .ToListAsync();
             var entity = booking.Adapt<List<BookingHistoryResponse>>();
             return entity;

@@ -1,11 +1,4 @@
-﻿using H_Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.HotelDto
+﻿namespace H_application.DTOs.HotelDto
 {
     public class HotelResponse
     {

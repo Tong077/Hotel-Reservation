@@ -16,7 +16,7 @@ namespace H_Reservation.Controllers
         public async Task<IActionResult> Index()
         {
             var result = await _service.GetEmployees();
-            return View("Index",result);
+            return View("Index", result);
         }
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -30,7 +30,7 @@ namespace H_Reservation.Controllers
             {
                 return View("Create");
             }
-            var result = await _service.CreateEmployee(dto,default);
+            var result = await _service.CreateEmployee(dto, default);
             if (result)
             {
                 return RedirectToAction("Index");
@@ -42,9 +42,9 @@ namespace H_Reservation.Controllers
         public async Task<IActionResult> Edit(int Id)
         {
             var employee = await _service.GetEmployeeById(Id);
-            if(employee == null)
+            if (employee == null)
                 return NotFound();
-            return View("Edit",employee);
+            return View("Edit", employee);
         }
         [HttpPost]
         public async Task<IActionResult> Update(EmployeeDtoUpdate dto)

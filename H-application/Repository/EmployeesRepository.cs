@@ -4,12 +4,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -33,7 +27,7 @@ namespace H_application.Repository
         {
             var entity = dto.Adapt<Employee>();
             await _context.Employee.AddAsync(entity);
-            return await _context.SaveChangesAsync()  > 0;
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<EmployeeDtoUpdate> GetEmployeeById(int Id, CancellationToken cancellationToken = default)
@@ -49,16 +43,16 @@ namespace H_application.Repository
 
         public async Task<List<EmployeeResponse>> GetEmployees(CancellationToken cancellationToken = default)
         {
-           var employ = await _context.Employee
-                .OrderBy(e => e.FullName)
-                .AsNoTracking().ToListAsync();
+            var employ = await _context.Employee
+                 .OrderBy(e => e.FullName)
+                 .AsNoTracking().ToListAsync();
             return employ.Select(g => g.Adapt<EmployeeResponse>()).ToList();
         }
 
         public async Task<bool> UpdateEmployee(EmployeeDtoUpdate dto, CancellationToken cancellationToken = default)
         {
             var entity = dto.Adapt<Employee>();
-             _context.Employee.Update(entity);
+            _context.Employee.Update(entity);
             return await _context.SaveChangesAsync() > 0;
         }
     }

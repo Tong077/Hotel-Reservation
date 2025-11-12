@@ -1,8 +1,6 @@
 ﻿using H_application.DTOs.HousekeepingDto;
 using H_application.Service;
 using H_Domain.DataContext;
-using H_Domain.Models;
-using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +47,7 @@ namespace H_Reservation.Controllers
             }
             return View("Create", dto);
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> Edit(int Id)
         {

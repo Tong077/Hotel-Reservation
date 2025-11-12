@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace H_application.DTOs.GuestDto
 {
@@ -19,6 +14,6 @@ namespace H_application.DTOs.GuestDto
         public string? Phone { get; set; }
         public string? Address { get; set; }
 
-        
+
     }
 }

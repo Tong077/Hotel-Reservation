@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.CurrencyDto
+﻿namespace H_application.DTOs.CurrencyDto
 {
     public class CurrencyDtoCreate
     {
-       
+
 
         public string? FromCurrency { get; set; }
         public string? ToCurrency { get; set; }

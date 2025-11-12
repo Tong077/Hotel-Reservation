@@ -1,6 +1,4 @@
-﻿using H_application.DTOs.RoomDto;
-using H_application.DTOs.RoomTypeDto;
-using H_Domain.Models;
+﻿using H_application.DTOs.RoomTypeDto;
 
 namespace H_application.Service
 {
@@ -12,6 +10,6 @@ namespace H_application.Service
 
         Task<RoomTypeDtoUpdate> GetRoomTypeByIdAsync(int Id, CancellationToken cancellationToken = default);
         Task<IEnumerable<RoomTypeResponse>> GetAllRoomTypesAsync(string filter, CancellationToken cancellationToken = default);
-        
+
     }
 }

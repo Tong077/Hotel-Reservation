@@ -2,11 +2,6 @@
 using H_Domain.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -32,10 +27,12 @@ namespace H_application.Repository
                 foreach (var res in reservationsToClean)
                 {
                     var room = await context.Rooms.FindAsync(res.RoomId);
-                    if(room != null && room.Status == "Cleaning"){
+                    if (room != null && room.Status == "Cleaning")
+                    {
                         room.Status = "Cleaning";
                         context.Rooms.Update(room);
-                    };
+                    }
+                    ;
                 }
                 await context.SaveChangesAsync();
 

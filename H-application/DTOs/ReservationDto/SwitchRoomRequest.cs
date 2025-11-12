@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.ReservationDto
+﻿namespace H_application.DTOs.ReservationDto
 {
     public class SwitchRoomRequest
     {
@@ -12,7 +6,7 @@ namespace H_application.DTOs.ReservationDto
         public string OldRoomNumber { get; set; } = "";
         public string NewRoomNumber { get; set; } = "";
         public DateTime Date { get; set; }
-       
+
         public string NewStatus { get; set; } = "";
 
     }

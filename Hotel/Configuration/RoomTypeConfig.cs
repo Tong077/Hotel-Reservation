@@ -25,15 +25,15 @@ public class RoomTypeConfig : IBaseEntityTypeConfiguration<RoomType>
            .HasConversion<string>()
            .UseCollation("Khmer_100_CI_AI_SC_UTF8")
            .HasMaxLength(200);
-         builder.Property(h => h.Currency)
-           .HasColumnName("Currency")
-           .HasConversion<string>()
-           .UseCollation("Khmer_100_CI_AI_SC_UTF8")
-           .HasMaxLength(50);
+        builder.Property(h => h.Currency)
+          .HasColumnName("Currency")
+          .HasConversion<string>()
+          .UseCollation("Khmer_100_CI_AI_SC_UTF8")
+          .HasMaxLength(50);
         builder.Property(h => h.PricePerNight)
            .HasColumnName("PricePerNight")
            .HasConversion<decimal>();
-        
+
 
         builder.Property(h => h.Capacity)
           .HasColumnName("Capacity")

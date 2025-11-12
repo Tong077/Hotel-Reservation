@@ -1,15 +1,9 @@
-﻿using Azure.Core;
-using H_application.DTOs.InvoicesDto;
+﻿using H_application.DTOs.InvoicesDto;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -154,7 +148,7 @@ namespace H_application.Repository
                     .ThenInclude(r => r!.ReservationServices)
                     .ThenInclude(rs => rs.Service)
                 .Include(i => i.Reservation.rooms)
-                    .ThenInclude(rm => rm!.hotel) 
+                    .ThenInclude(rm => rm!.hotel)
                 .Include(i => i.Reservation.rooms.roomType)
                 .Include(i => i.Payment)
                 .Where(i => i.InvoiceId == id)

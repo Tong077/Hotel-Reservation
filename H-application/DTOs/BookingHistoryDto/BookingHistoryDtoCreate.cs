@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.BookingHistoryDto
+﻿namespace H_application.DTOs.BookingHistoryDto
 {
     public class BookingHistoryDtoCreate
     {
-       
+
 
         public int? ReservationId { get; set; }
 

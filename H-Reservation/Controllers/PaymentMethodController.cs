@@ -1,7 +1,5 @@
-﻿using H_application.DTOs.Payment;
-using H_application.DTOs.PaymentMethodDto;
+﻿using H_application.DTOs.PaymentMethodDto;
 using H_application.Service;
-using H_Domain.DataContext;
 using Microsoft.AspNetCore.Mvc;
 
 namespace H_Reservation.Controllers

@@ -1,9 +1,4 @@
 ﻿using H_application.DTOs.RoomDto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.DTOs.ReservationDto
 {
@@ -14,7 +9,7 @@ namespace H_application.DTOs.ReservationDto
 
         public int? GuestId { get; set; }
 
-        
+
         public List<int>? RoomId { get; set; } = new();
 
         // Rooms already reserved (used to preselect in dropdown)
@@ -34,6 +29,6 @@ namespace H_application.DTOs.ReservationDto
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public List<RoomResponse> RoomResponses { get; set; } = new();
-        
+
     }
 }

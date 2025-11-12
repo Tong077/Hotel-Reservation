@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace H_application.DTOs.Payment
+﻿namespace H_application.DTOs.Payment
 {
     public class PaymentDtoUpdate
     {
@@ -12,7 +6,7 @@ namespace H_application.DTOs.Payment
 
 
         //public int? ReservationId { get; set; }
-      public List<int> ReservationId { get; set; } = new();
+        public List<int> ReservationId { get; set; } = new();
 
 
 

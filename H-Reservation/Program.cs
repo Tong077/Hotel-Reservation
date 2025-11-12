@@ -1,4 +1,3 @@
-using H_application.DTOs.RoomTypeDto;
 using H_application.Error;
 using H_application.Repository;
 using H_application.Service;

@@ -1,7 +1,6 @@
 ﻿using H_application.DTOs.RoomDto;
 using H_application.Service;
 using H_Domain.DataContext;
-using H_Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

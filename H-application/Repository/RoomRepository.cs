@@ -4,12 +4,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -39,7 +33,7 @@ namespace H_application.Repository
         {
             var result = await _context.Rooms
                 .Include(type => type.roomType)
-                .Include(h =>h.hotel)
+                .Include(h => h.hotel)
                 .AsNoTracking().ToListAsync();
 
             var entity = result.Select(r => new RoomResponse
@@ -61,7 +55,7 @@ namespace H_application.Repository
 
         public async Task<List<RoomResponse>> GetAvailableRoomsAsync(CancellationToken cancellationToken)
         {
-            var allowedStatuses = new[] { "Available", "Occupied","Reserved", "Cleaning" };
+            var allowedStatuses = new[] { "Available", "Occupied", "Reserved", "Cleaning" };
 
             return await _context.Rooms
                 .Include(r => r.roomType)
@@ -103,7 +97,7 @@ namespace H_application.Repository
         public async Task<RoomDtoUpdate> GetRoomByIdAsync(int Id, CancellationToken cancellationToken)
         {
             var result = await _context.Rooms
-                .AsNoTracking() 
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.RoomId == Id, cancellationToken);
 
             var entity = result.Adapt<RoomDtoUpdate>();
@@ -111,7 +105,7 @@ namespace H_application.Repository
         }
         public async Task<bool> UpdateRoomAsync(RoomDtoUpdate room, CancellationToken cancellationToken)
         {
-         
+
             var entity = room.Adapt<Room>();
             _context.Rooms.Update(entity);
             return await _context.SaveChangesAsync() > 0;

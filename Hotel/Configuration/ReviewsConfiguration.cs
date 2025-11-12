@@ -1,11 +1,6 @@
 ﻿using H_Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_Domain.Configuration
 {
@@ -31,7 +26,7 @@ namespace H_Domain.Configuration
 
             builder.Property(h => h.Rating)
                .HasColumnName("Rating")
-               .HasConversion<int>() ;
+               .HasConversion<int>();
 
             builder.Property(h => h.Comment)
               .HasColumnName("Comment")

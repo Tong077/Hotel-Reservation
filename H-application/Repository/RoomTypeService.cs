@@ -4,11 +4,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace H_application.Repository
 {
@@ -35,7 +30,7 @@ namespace H_application.Repository
 
         public async Task<IEnumerable<RoomTypeResponse>> GetAllRoomTypesAsync(string filter, CancellationToken cancellationToken = default)
         {
-            var result = await _conext.RoomTypes  
+            var result = await _conext.RoomTypes
                 .AsNoTracking().ToListAsync();
             var entity = result.Adapt<List<RoomTypeResponse>>();
             return entity;
@@ -45,7 +40,7 @@ namespace H_application.Repository
         public async Task<RoomTypeDtoUpdate> GetRoomTypeByIdAsync(int Id, CancellationToken cancellationToken = default)
         {
             var result = await _conext.RoomTypes
-                .FirstOrDefaultAsync( r=> r.RoomTypeId == Id);
+                .FirstOrDefaultAsync(r => r.RoomTypeId == Id);
             var entity = result?.Adapt<RoomTypeDtoUpdate>();
             return entity!;
         }

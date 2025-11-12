@@ -5,7 +5,6 @@ using H_Domain.DataContext;
 using H_Domain.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace H_Reservation.Service
 {
@@ -42,7 +41,7 @@ namespace H_Reservation.Service
             };
         }
 
-       
+
         public async Task<bool> CreateReservationAsync(ReservationDtoCreate reservation, CancellationToken cancellationToken)
         {
             if (reservation.RoomId == null || !reservation.RoomId.Any())
@@ -51,7 +50,7 @@ namespace H_Reservation.Service
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
-               
+
                 decimal? perRoomPrice = reservation.TotalPrice / reservation.RoomId.Count;
 
                 foreach (var roomId in reservation.RoomId)
@@ -64,7 +63,7 @@ namespace H_Reservation.Service
                         CheckOutDate = reservation.CheckOutDate,
                         GuestId = reservation.GuestId,
                         Currency = reservation.Currency,
-                        TotalPrice = perRoomPrice, 
+                        TotalPrice = perRoomPrice,
                         CreatedAt = DateTime.UtcNow
                     };
 
@@ -122,7 +121,7 @@ namespace H_Reservation.Service
                 .ToListAsync(cancellationToken);
 
             var grouped = reserv
-                .GroupBy(r => r.ReservationId)  
+                .GroupBy(r => r.ReservationId)
                 .Select(g => new ReservationResponse
                 {
                     ReservationId = g.Key,
@@ -152,23 +151,23 @@ namespace H_Reservation.Service
 
         public async Task<ReservationDtoUpdate> GetReservationByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            
+
             var reservation = await _context.Reservations
                 .Include(r => r.guest)
-                .Include(r => r.rooms)  
-                .ThenInclude(room => room!.roomType) 
+                .Include(r => r.rooms)
+                .ThenInclude(room => room!.roomType)
                 .FirstOrDefaultAsync(r => r.ReservationId == id, cancellationToken);
 
             if (reservation == null)
             {
-                return null!; 
+                return null!;
             }
 
-           
+
             var bookingReservations = await _context.Reservations
                 .Where(r => r.GuestId == reservation.GuestId
-                            && r.CheckInDate == reservation.CheckInDate  
-                            && r.CheckOutDate == reservation.CheckOutDate) 
+                            && r.CheckInDate == reservation.CheckInDate
+                            && r.CheckOutDate == reservation.CheckOutDate)
                 .Include(r => r.rooms)  // Fixed: singular
                 .ThenInclude(room => room!.roomType)
                 .ToListAsync(cancellationToken);
@@ -178,31 +177,31 @@ namespace H_Reservation.Service
                 return null!;
             }
 
-            
+
             var dto = new ReservationDtoUpdate
             {
                 ReservationId = reservation.ReservationId,
                 GuestId = reservation.GuestId,
-                RoomId = bookingReservations.Select(r => r.RoomId ?? 0).ToList(), 
+                RoomId = bookingReservations.Select(r => r.RoomId ?? 0).ToList(),
                 SelectedRoomIds = bookingReservations.Select(r => r.RoomId ?? 0).ToList(),
                 CheckInDate = reservation.CheckInDate,
                 CheckOutDate = reservation.CheckOutDate,
                 Currency = reservation.Currency,
-                TotalPrice = bookingReservations.Sum(r => r.TotalPrice ?? 0m),  
+                TotalPrice = bookingReservations.Sum(r => r.TotalPrice ?? 0m),
                 Status = reservation.Status,
                 CreatedAt = reservation.CreatedAt?.Date ?? DateTime.MinValue,
 
             };
 
-            
+
             dto.RoomResponses = bookingReservations
-                .Where(r => r.rooms != null)  
+                .Where(r => r.rooms != null)
                 .Select(r => new RoomResponse
                 {
-                    RoomId = r.rooms!.RoomId, 
+                    RoomId = r.rooms!.RoomId,
                     RoomNumber = r.rooms.RoomNumber ?? string.Empty,
-                    RoomTypeName = r.rooms.roomType?.Name ?? string.Empty, 
-                    RoomPrice = r.rooms.roomType?.PricePerNight ?? 0m, 
+                    RoomTypeName = r.rooms.roomType?.Name ?? string.Empty,
+                    RoomPrice = r.rooms.roomType?.PricePerNight ?? 0m,
                     Currency = r.rooms.roomType?.Currency ?? string.Empty,
                     Status = r.rooms.Status ?? string.Empty
                 }).ToList();
@@ -293,7 +292,7 @@ namespace H_Reservation.Service
             return await _context.SaveChangesAsync() > 0;
         }
 
-        
+
         public async Task<bool> UpdateReservationStatusAsync(ReservationDtoUpdate dto, CancellationToken cancellation)
         {
             if (dto.ReservationId <= 0 || dto.RoomId == null || !dto.RoomId.Any())
@@ -303,7 +302,7 @@ namespace H_Reservation.Service
             if (anchorReservation == null)
                 return false;
 
-           
+
             var existingReservations = await _context.Reservations
                 .Where(r => r.GuestId == anchorReservation.GuestId
                             && r.CheckInDate == anchorReservation.CheckInDate
@@ -317,21 +316,21 @@ namespace H_Reservation.Service
             using var transaction = await _context.Database.BeginTransactionAsync(cancellation);
             try
             {
-                
+
                 foreach (var roomIdToRemove in existingRoomIds.Except(newRoomIds))
                 {
                     var oldRes = existingReservations.FirstOrDefault(r => r.RoomId == roomIdToRemove);
                     if (oldRes != null)
                     {
-                        
+
                         var oldRoom = await _context.Rooms.FindAsync(roomIdToRemove);
                         if (oldRoom != null)
                         {
-                            oldRoom.Status = "Available"; 
+                            oldRoom.Status = "Available";
                             _context.Rooms.Update(oldRoom);
                         }
 
-                       
+
                         _context.Reservations.Remove(oldRes);
                     }
                 }
@@ -358,7 +357,7 @@ namespace H_Reservation.Service
                     }
                 }
 
-               
+
                 foreach (var roomIdToAdd in newRoomIds.Except(existingRoomIds))
                 {
                     var newRes = new Reservation
@@ -462,7 +461,7 @@ namespace H_Reservation.Service
                     var previousMonth = monthlyRevenue[i - 1].TotalRevenue;
                     var currentMonth = monthlyRevenue[i].TotalRevenue;
                     monthlyRevenue[i].GrowthPercentage = previousMonth == 0
-                ? 100 
+                ? 100
                 : Math.Round(((currentMonth - previousMonth) / previousMonth) * 100, 2);
                 }
             }
@@ -520,6 +519,6 @@ namespace H_Reservation.Service
             return calendarData;
         }
 
-        
+
     }
 }

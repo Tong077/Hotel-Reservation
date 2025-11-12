@@ -36,7 +36,7 @@ public class HotelsConfig : IBaseEntityTypeConfiguration<Hotels>
         builder.Property(h => h.Email)
             .HasColumnName("Email")
             .HasConversion<string>()
-            .HasMaxLength(100); 
+            .HasMaxLength(100);
 
         builder.Property(h => h.Phone)
           .HasColumnName("Phone")

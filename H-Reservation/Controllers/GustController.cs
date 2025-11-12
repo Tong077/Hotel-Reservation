@@ -1,12 +1,8 @@
 ﻿using H_application.DTOs.GuestDto;
-using H_application.Error;
 using H_Application.Service;
 using H_Domain.DataContext;
-using H_Domain.Models;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace H_Reservation.Controllers
 {
@@ -55,7 +51,7 @@ namespace H_Reservation.Controllers
                     return RedirectToAction("Index");
                 }
 
-                
+
                 ModelState.AddModelError(string.Empty, "Guest with same Email or Phone already exists.");
                 return View("Create", dtoCreate);
             }
@@ -135,7 +131,7 @@ namespace H_Reservation.Controllers
 
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> _Store([FromForm] GuestDtoCreate dtoCreate, CancellationToken cancellation)
@@ -167,7 +163,7 @@ namespace H_Reservation.Controllers
                     {
                         errors["Phone"] = "An guest with this phone number already exists.";
                     }
-                    
+
                     return Json(new { success = false, errors });
                 }
 
@@ -194,7 +190,7 @@ namespace H_Reservation.Controllers
 
 
     }
-    
+
 }
 
 
