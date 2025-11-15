@@ -110,11 +110,11 @@
                                 </td>
 
                                     <td>
-                                        <a asp-controller="Room" asp-action="Edit" asp-route-id="@item.RoomId" class="mr-2">
-                                            <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                <a asp-controller="Room" asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-outline-primary mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
                                         </a>
-                                        <a asp-controller="Room" asp-action="Delete" asp-route-id="@item.RoomId">
-                                            <i class="fa-solid fa-trash icon-delete"></i>
+                                <a asp-controller="Room" asp-action="Delete" asp-route-id="@item.RoomId" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -125,29 +125,6 @@
         </div>
     </div>
 </div>
-
-@* <!-- GLightbox + Select All Script -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const lightbox = GLightbox({
-            selector: '.glightbox',
-            touchNavigation: true,
-            loop: true,
-            zoomable: true,
-            closeButton: true,
-            keyboardNavigation: true,
-            openEffect: 'fade',
-            closeEffect: 'fade'
-        });
-
-        // Select all checkboxes
-        const selectAll = document.getElementById("selectAll");
-        selectAll.addEventListener("change", function () {
-            const checkboxes = document.querySelectorAll('input[name="selectedRoomIds"]');
-            checkboxes.forEach(cb => cb.checked = this.checked);
-        });
-    });
-</script> *@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const lightbox = GLightbox({

@@ -1,4 +1,5 @@
 ﻿using H_application.DTOs.ReservationDto;
+using H_application.Helpers;
 
 namespace H_application.Service
 {
@@ -9,7 +10,9 @@ namespace H_application.Service
         Task<bool> DeleteReservationAsync(ReservationDtoUpdate reservation, CancellationToken cancellationToken);
 
         Task<ReservationDtoUpdate> GetReservationByIdAsync(int Id, CancellationToken cancellationToken);
-        Task<IEnumerable<ReservationResponse>> GetAllReservationAsync(string filter, CancellationToken cancellationToken);
+
+        //Task<List<ReservationResponse>> GetAllReservationAsyncs(string search, CancellationToken cancellationToken);
+        IQueryable<ReservationResponse> GetAllReservationQuery(string search, CancellationToken cancellation= default);
 
         Task<bool> UpdateReservationStatusAsync(ReservationDtoUpdate dto, CancellationToken cancellation);
         Task<ReservationResponse> TotalReservation(CancellationToken cancellationToken);
@@ -19,6 +22,8 @@ namespace H_application.Service
         Task<ReservationResponse> PendingReservatoin(CancellationToken cancellationToken);
 
         Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime? startDate, CancellationToken cancellationToken);
+
+        Task<IEnumerable<ReservationResponse>> GetAllReservationAsync(string filter, CancellationToken cancellationToken);
 
     }
 }

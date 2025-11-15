@@ -88,17 +88,23 @@
                             <td>
                                 @if (item.PaymentStatus == "Pending")
                                 {
-                                    <a asp-controller="Payment" asp-action="Edit" asp-route-id="@item.PaymentId" class="mr-2">
-                                        <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                    <a asp-controller="Payment" asp-action="Edit" asp-route-id="@item.PaymentId" class="btn btn-sm btn-outline-primary mr-1">
+                                        <i class="fa-solid fa-pen-nib"></i>
                                     </a>
-                                    <a asp-controller="Payment" asp-action="Delete" asp-route-id="@item.PaymentId">
-                                        <i class="fa-solid fa-trash icon-delete"></i>
+                                    <a asp-controller="Payment" asp-action="Delete" asp-route-id="@item.PaymentId" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-solid fa-trash"></i>
                                     </a>
                                 }
                                 else
                                 {
-                                    <i class="fa-solid fa-pen-nib icon-edit mr-2" title="Cannot edit completed payment" style="cursor: not-allowed;"></i>
-                                    <i class="fa-solid fa-trash icon-delete" title="Cannot delete completed payment" style="cursor: not-allowed;"></i>
+                                    
+
+                                    <a asp-controller="Payment" asp-action="Edit" title="Cannot edit completed payment" asp-route-id="@item.PaymentId" class="btn btn-sm btn-outline-primary mr-1" style="cursor: not-allowed;">
+                                        <i class="fa-solid fa-pen-nib"></i>
+                                    </a>
+                                    <a asp-controller="Payment" asp-action="Delete" title="Cannot delete completed payment" asp-route-id="@item.PaymentId" class="btn btn-sm btn-outline-danger" style="cursor: not-allowed;">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
                                 }
                             </td>
 

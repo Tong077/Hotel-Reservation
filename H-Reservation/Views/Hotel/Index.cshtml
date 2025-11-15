@@ -52,11 +52,11 @@
                                 @Html.DisplayFor(items => item.Address)
                             </td>
                             <td>
-                                <a asp-controller="Hotel" asp-action="Edit" asp-route-id="@item.HotelId" class="mr-2">
-                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                <a asp-controller="Hotel" asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-sm btn-outline-primary mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
                                 </a>
-                                <a asp-controller="Hotel" asp-action="Delete" asp-route-id="@item.HotelId">
-                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                <a asp-controller="Hotel" asp-action="Delete" asp-route-id="@item.HotelId" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
                                 </a>
                             </td>
 

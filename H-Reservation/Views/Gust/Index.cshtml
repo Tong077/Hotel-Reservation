@@ -51,11 +51,11 @@
                                 @Html.DisplayFor(items => item.Address)
                             </td>
                             <td>
-                                <a asp-controller="Gust" asp-action="Edit" asp-route-id="@item.GuestId" class="mr-2">
-                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                <a asp-controller="Gust" asp-action="Edit" asp-route-id="@item.GuestId" class="btn btn-sm btn-outline-primary mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
                                 </a>
-                                <a asp-controller="Gust" asp-action="Delete" asp-route-id="@item.GuestId">
-                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                <a asp-controller="Gust" asp-action="Delete" asp-route-id="@item.GuestId" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
                                 </a>
                             </td>
 

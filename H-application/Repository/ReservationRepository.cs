@@ -1,5 +1,6 @@
 ﻿using H_application.DTOs.ReservationDto;
 using H_application.DTOs.RoomDto;
+using H_application.Helpers;
 using H_application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
@@ -146,6 +147,53 @@ namespace H_Reservation.Service
             return grouped;
         }
 
+
+        public IQueryable<ReservationResponse> GetAllReservationQuery(string search, CancellationToken cancellation = default)
+{
+    var query =
+        _context.Reservations
+            .Include(r => r.guest)
+            .Include(r => r.rooms)
+                .ThenInclude(rt => rt!.roomType)
+            .AsNoTracking()
+            .AsQueryable();
+
+    // 🔍 Search filter
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        query = query.Where(r =>
+            r.guest.FirstName.Contains(search) ||
+            r.guest.LastName.Contains(search));
+    }
+
+    // 🔥 Convert to ReservationResponse WITHOUT ToList()
+    var result = query
+        .GroupBy(r => r.ReservationId)
+        .Select(g => new ReservationResponse
+        {
+            ReservationId = g.Key,
+            GuestId = g.First().GuestId,
+            CheckInDate = g.First().CheckInDate,
+            CheckOutDate = g.First().CheckOutDate,
+            TotalPrice = g.Sum(x => x.TotalPrice ?? 0),
+            Currency = g.First().Currency,
+            Status = g.First().Status,
+
+            FirstName = g.First().guest.FirstName,
+            LastName = g.First().guest.LastName,
+
+            Rooms = g.Select(x => new RoomResponse
+            {
+                RoomId = x.RoomId ?? 0,
+                RoomNumber = x.rooms.RoomNumber,
+                RoomTypeName = x.rooms.roomType.Name,
+                RoomPrice = x.rooms.roomType.PricePerNight,
+                RoomCurrency = x.rooms.roomType.Currency
+            }).ToList()
+        });
+
+    return result;
+}
 
 
 
@@ -519,6 +567,6 @@ namespace H_Reservation.Service
             return calendarData;
         }
 
-
+       
     }
 }

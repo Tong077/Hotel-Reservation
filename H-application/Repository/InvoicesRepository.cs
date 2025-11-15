@@ -27,37 +27,7 @@ namespace H_application.Repository
 
 
 
-        //public async Task<InvoicesDtoCreate> CreateInvoiceAsync(int reservationId, CancellationToken cancellation = default)
-        //{
-        //    var reservation = await _context.Reservations
-        //        .FirstOrDefaultAsync(i => i.ReservationId == reservationId, cancellation);
-        //    if (reservation == null)
-        //        throw new Exception("Reservation not found!");
-
-        //    var payment = await _context.Payments
-        //        .FirstOrDefaultAsync(p => p.PaymentId == reservation.PaymentId, cancellation);
-        //    if (payment == null)
-        //        throw new Exception("No Payment Found for this Reservation.");
-
-        //    var taxValue = await _system.GetValueAsync("TaxRate", cancellation);
-        //    var taxRate = decimal.TryParse(taxValue, out var parsedTax) ? parsedTax : 0.10m;
-
-        //    var tax = reservation.TotalPrice * taxRate;
-        //    var grandTotal = reservation.TotalPrice + tax;
-
-        //    var invoice = new InvoicesDtoCreate
-        //    {
-        //        ReservationId = reservationId,
-        //        PaymentId = payment.PaymentId,
-        //        TotalAmount = reservation.TotalPrice,
-        //        TaxAmount = tax,
-        //        GrandTotal = grandTotal,
-        //        IssuedDate = DateTime.UtcNow,
-        //    };
-
-        //    await CreateInvoiceAsync(invoice, cancellation);
-        //    return invoice;
-        //}
+       
 
         public async Task<InvoicesDtoCreate> CreateInvoiceAsync(int reservationId, CancellationToken cancellation = default)
         {
@@ -79,7 +49,7 @@ namespace H_application.Repository
                 throw new Exception("No Payment Found for this Reservation.");
 
             // 3️⃣ Calculate totals
-            decimal roomPrice = reservation?.TotalPrice ?? 0; // your room price
+            decimal roomPrice = reservation?.TotalPrice ?? 0; 
             decimal servicesTotal = reservation!.ReservationServices?.Sum(rs => rs.TotalPrice) ?? 0;
 
             decimal subtotal = roomPrice + servicesTotal;

@@ -1,15 +1,54 @@
 ﻿@using H_application.DTOs.ReservationDto
-@model IEnumerable<ReservationResponse>
+@using H_application.Helpers
+@model Paginate<ReservationResponse>
+@{
+    int pageSize = ViewBag.PageSize != null ? (int)ViewBag.PageSize : 10;
+}
 @* <partial name="_style" />
 <partial name="GetallInformation" />
 <partial name="GetRevenueSummary" /> *@
+
 <partial name="_RoomCalendar" />
 <div class="card shadow border-0 rounded-4">
     <div class="card-body">
-        <h4 class="card-title">Reservation Information</h4>
-        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <a asp-action="Create" class="btn btn-success btn-sm">
+            <i class="fa-solid fa-square-plus"></i>
+        </a>
+        <form method="get" class="d-flex justify-content-end align-items-center mb-3 gap-2">
+
+            <!-- Search input + button together -->
+            <div class="d-flex align-items-center gap-1">
+                <input type="text" name="search"
+                       value="@ViewBag.Search"
+                       class="form-control form-control-sm"
+                       placeholder="Search guest name..."
+                       style="max-width: 250px;" />
+                <button type="submit" class="btn btn-primary btn-sm ml-1">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+
+            <!-- Page size selector -->
+            <div class="d-flex align-items-center ml-2">
+                <label class="me-1 mb-0 mr-2">Show</label>
+                <select name="pageSize" class="form-control form-control-sm" style="width: 80px;" onchange="this.form.submit()">
+                    <option value="10" selected="@(pageSize == 10 ? "selected" : null)">10</option>
+                    <option value="25" selected="@(pageSize == 25 ? "selected" : null)">25</option>
+                    <option value="50" selected="@(pageSize == 50 ? "selected" : null)">50</option>
+                    <option value="100" selected="@(pageSize == 100 ? "selected" : null)">100</option>
+                </select>
+
+
+
+                <label class="ms-1 mb-0 ml-2">Entries</label>
+            </div>
+
+        </form>
+
+
+        <!-- TABLE -->
         <div class="table-responsive">
-            <table class="table align-middle table-hover">
+            <table class="table table-hover align-middle">
                 <thead class="bg-light">
                     <tr>
                         <th>Guest</th>
@@ -26,29 +65,21 @@
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td><strong>@item.FirstName @item.LastName</strong></td>
+
                             <td>
-                                <strong>@item.FirstName @item.LastName</strong>
-                            </td>
-                            <td>
-                                @{
-                                    var roomCount = item.Rooms?.Count ?? 1;
-                                   
-                                }
-                               
-                                <span class="fw-semibold">
-                                    @string.Join(", ", item.Rooms?.Select(r =>
-                                    $"{r.RoomNumber} - {r.RoomTypeName} - " +
-                                    (r.RoomCurrency switch
-                                    {
-                                        "USD" => $"${r.RoomPrice:F2}",
-                                        "KHR" => $"{Math.Round(r.RoomPrice ?? 0)} Riel",
-                                        _ => r.RoomPrice.ToString()
-                                    })
-                                                                ) ?? new string[0])
-                            </span>
+                                @string.Join(", ",
+                                item.Rooms.Select(r => $"{r.RoomNumber} - {r.RoomTypeName} - " +
+                                (r.RoomCurrency == "USD" ? $"${r.RoomPrice:F2}" :
+                                r.RoomCurrency == "KHR" ? $"{Math.Round(r.RoomPrice ?? 0)} Riel" :
+                                r.RoomPrice.ToString())
+                                )
+                                                        )
                         </td>
+
                         <td>@item.CheckInDate?.ToString("yyyy-MM-dd HH:mm")</td>
                         <td>@item.CheckOutDate?.ToString("yyyy-MM-dd HH:mm")</td>
+
                         <td class="text-success fw-semibold">
                             @if (item.Currency == "USD")
                                 {
@@ -63,30 +94,76 @@
                                     @item.TotalPrice
                                 }
                         </td>
+
                         <td>@item.Currency</td>
+
                         <td>
                             <span class="badge rounded-pill
-                                        @(
-                                                                       item.Status == "CheckedIn" ? "bg-success" :
-                                                                       item.Status == "Confirmed" ? "bg-primary" :
-                                                                       item.Status == "CheckedOut" ? "bg-info" :
-                                                                       item.Status == "Pending" ? "bg-warning text-dark" :
-                                                                       item.Status == "Cancelled" ? "bg-danger" : "bg-secondary")">
+                                @(item.Status == "CheckedIn" ? "bg-success" :
+                                                                    item.Status == "Confirmed" ? "bg-primary" :
+                                                                    item.Status == "CheckedOut" ? "bg-info" :
+                                                                    item.Status == "Pending" ? "bg-warning text-dark" :
+                                                                    item.Status == "Cancelled" ? "bg-danger" : "bg-secondary")">
                                 @item.Status
                             </span>
                         </td>
-                        <td class="text-center">
-                            <a asp-controller="Reservation" asp-action="Edit" asp-route-id="@item.ReservationId" class="btn btn-sm btn-outline-primary me-1">
-                                <i class="fa-solid fa-pen-nib"></i>
-                            </a>
-                            <a asp-controller="Reservation" asp-action="Delete" asp-route-id="@item.ReservationId" class="btn btn-sm btn-outline-danger">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.ReservationId" class="btn btn-outline-primary btn-sm me-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.ReservationId" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
                                         }
                 </tbody>
             </table>
         </div>
+
+        <!-- PAGINATION -->
+        <nav>
+            <ul class="pagination mt-3">
+
+                <!-- Previous -->
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(Model.PageIndex - 1)"
+                       asp-route-pageSize="@ViewBag.PageSize"
+                       asp-route-search="@ViewBag.Search">
+                        Previous
+                    </a>
+                </li>
+
+                <!-- Page Numbers -->
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-pageSize="@ViewBag.PageSize"
+                           asp-route-search="@ViewBag.Search">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <!-- Next -->
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(Model.PageIndex + 1)"
+                       asp-route-pageSize="@ViewBag.PageSize"
+                       asp-route-search="@ViewBag.Search">
+                        Next
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
     </div>
 </div>

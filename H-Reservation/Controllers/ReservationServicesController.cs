@@ -1,4 +1,5 @@
-﻿using H_application.DTOs.ReservationServicesDto;
+﻿using H_application.DTOs.ReservationDto;
+using H_application.DTOs.ReservationServicesDto;
 using H_application.Service;
 using H_Domain.DataContext;
 using Microsoft.AspNetCore.Mvc;
@@ -123,8 +124,10 @@ namespace H_Reservation.Controllers
 
             ViewBag.Service = new SelectList(servicelist, "ServiceId", "DisplayText");
 
-
+            // Fix: Provide required 'page' and 'pageSize' arguments (e.g., 1 and 100)
             var reservations = await _reservation.GetAllReservationAsync("", default);
+            //var reservations = reservationsPaginated.Ite ?? new List<ReservationResponse>();
+
             var reservationSelectList = reservations.Select(r =>
             {
                 var room = r.Rooms?.FirstOrDefault();
@@ -141,7 +144,6 @@ namespace H_Reservation.Controllers
             }).ToList();
 
             ViewBag.Reservation = new SelectList(reservationSelectList, "ReservationId", "DisplayText");
-
 
 
         }

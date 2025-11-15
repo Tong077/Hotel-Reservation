@@ -65,11 +65,11 @@
                                 @Html.DisplayFor(items => item.Status)
                             </td>
                             <td>
-                                <a asp-controller="Employees" asp-action="Edit" asp-route-Id="@item.EmployeeId" class="mr-2">
-                                    <i class="fa-solid fa-pen-nib icon-edit"></i>
+                                <a asp-controller="Employees" asp-action="Edit" asp-route-Id="@item.EmployeeId" class="btn btn-sm btn-outline-primary mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
                                 </a>
-                                <a asp-controller="Employees" asp-action="Delete" asp-route-Id="@item.EmployeeId">
-                                    <i class="fa-solid fa-trash icon-delete"></i>
+                                <a asp-controller="Employees" asp-action="Delete" asp-route-Id="@item.EmployeeId" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
                                 </a>
                             </td>
 

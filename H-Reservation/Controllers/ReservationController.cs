@@ -1,10 +1,12 @@
 ﻿using H_application.DTOs.GuestDto;
 using H_application.DTOs.ReservationDto;
 using H_application.DTOs.RoomDto;
+using H_application.Helpers;
 using H_application.Service;
 using H_Application.Service;
 using H_Domain.DataContext;
 using H_Domain.Models;
+using H_Reservation.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -24,14 +26,19 @@ namespace H_Reservation.Controllers
             _guest = guest;
             _room = room;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string search = "", CancellationToken cancellation = default)
         {
+            var query = _reservartion.GetAllReservationQuery(search);
 
-            await LoadTotalRevenuse();
+            var model = await Paginate<ReservationResponse>.CreateAsync(query, page, pageSize);
 
-            var result = await _reservartion.GetAllReservationAsync("", default);
-            return View("Index", result);
+            ViewBag.PageSize = pageSize; // important!
+            ViewBag.Search = search;
+
+            return View(model);
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
