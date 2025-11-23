@@ -32,14 +32,11 @@ namespace H_Reservation.Controllers
 
             var model = await Paginate<ReservationResponse>.CreateAsync(query, page, pageSize);
 
-            ViewBag.PageSize = pageSize; // important!
+            ViewBag.PageSize = pageSize;
             ViewBag.Search = search;
 
             return View(model);
         }
-
-
-
         [HttpGet]
         public async Task<IActionResult> Create()
         {

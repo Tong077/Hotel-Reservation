@@ -26,7 +26,7 @@ namespace H_application.Repository
         public async Task<bool> DeleteEmployee(EmployeeDtoUpdate dto, CancellationToken cancellationToken = default)
         {
             var entity = dto.Adapt<Employee>();
-            await _context.Employee.AddAsync(entity);
+             _context.Employee.Remove(entity);
             return await _context.SaveChangesAsync() > 0;
         }
 

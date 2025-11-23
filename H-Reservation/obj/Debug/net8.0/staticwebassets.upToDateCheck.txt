@@ -86,6 +86,7 @@ wwwroot\images\rooms\f6167cfa-a294-450e-99c8-4e511f351d09.jpg
 wwwroot\images\rooms\f9633968-69a1-425a-80c5-bba6b8b10806.png
 wwwroot\images\rooms\fd60be2e-025c-458c-9fa1-8c3d04c8544a.jpg
 wwwroot\images\rooms\ff86b8e6-ae69-42fd-ae89-8788378db538.jpg
+wwwroot\js\site-ajax.js
 wwwroot\quixlab\quixlab-bootstrap-main\.editorconfig
 wwwroot\quixlab\quixlab-bootstrap-main\.gitignore
 wwwroot\quixlab\quixlab-bootstrap-main\LICENSE

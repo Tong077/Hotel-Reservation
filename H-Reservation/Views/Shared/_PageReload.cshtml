@@ -1,0 +1,44 @@
+﻿document.addEventListener("DOMContentLoaded", () => {
+
+    // Select all forms that want AJAX submission
+    const forms = document.querySelectorAll("form[data-ajax='true']");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const actionUrl = form.getAttribute("action");
+            const method = form.getAttribute("method") || "POST";
+            const formData = new FormData(form);
+
+            // Optional: show loading status
+            const messageBox = form.querySelector(".form-message");
+            if (messageBox) {
+                messageBox.innerHTML = `<div class="alert alert-info">Processing...</div>`;
+            }
+
+            try {
+                const response = await fetch(actionUrl, {
+                    method: method,
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (messageBox) {
+                    if (result.success) {
+                        messageBox.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+                        form.reset();
+                    } else {
+                        messageBox.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
+                    }
+                }
+
+            } catch (error) {
+                if (messageBox) {
+                    messageBox.innerHTML = `<div class="alert alert-danger">Something went wrong.</div>`;
+                }
+            }
+        });
+    });
+});

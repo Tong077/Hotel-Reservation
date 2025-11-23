@@ -1,28 +1,34 @@
-﻿<form method="get" class="mb-3">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+﻿@{
+    int pageSize = ViewBag.PageSize != null ? (int)ViewBag.PageSize : 10;
+}
 
-        <!-- Search Box -->
-        <div class="input-group input-group-sm" style="width: 260px;">
-            <span class="input-group-text bg-light"><i class="fa fa-search"></i></span>
-            <input type="text" name="search" value="@ViewBag.Search"
-                   class="form-control"
-                   placeholder="Search guest, room, status..."
-                   onkeypress="if(event.key==='Enter'){ this.form.submit(); }" />
-        </div>
+<form method="get" class="d-flex justify-content-end align-items-center mb-3 gap-2">
 
-        <!-- Page Size Dropdown -->
-        <div class="input-group input-group-sm" style="width: 190px;">
-            <span class="input-group-text bg-light fw-semibold">Show</span>
-
-            <select name="pageSize" class="form-select" onchange="this.form.submit()">
-                <option value="10" selected=" @(ViewBag.PageSize == 10 ? "selected" : "")">10</option>
-                <option value="25" selected="@(ViewBag.PageSize == 25 ? "selected" : "")">25</option>
-                <option value="50" selected=" @(ViewBag.PageSize == 50 ? "selected" : "")">50</option>
-                <option value="100" selected=" @(ViewBag.PageSize == 100 ? "selected" : "")">100</option>
-            </select>
-
-            <span class="input-group-text bg-light fw-semibold">entries</span>
-        </div>
-
+    <!-- Search input + button together -->
+    <div class="d-flex align-items-center gap-1">
+        <input type="text" name="search"
+               value="@ViewBag.Search"
+               class="form-control form-control-sm"
+               placeholder="Search guest name..."
+               style="max-width: 250px;" />
+        <button type="submit" class="btn btn-primary mr-2">
+            <i class="fa fa-search"></i>
+        </button>
     </div>
+
+    <!-- Page size selector -->
+    <div class="d-flex align-items-center ml-2">
+        <label class="me-1 mb-0 mr-2">Show</label>
+        <select name="pageSize" class="form-control form-control-sm" style="width: 80px;" onchange="this.form.submit()">
+            <option value="10" selected="@(pageSize == 10 ? "selected" : null)">10</option>
+            <option value="25" selected="@(pageSize == 25 ? "selected" : null)">25</option>
+            <option value="50" selected="@(pageSize == 50 ? "selected" : null)">50</option>
+            <option value="100" selected="@(pageSize == 100 ? "selected" : null)">100</option>
+        </select>
+
+
+
+        <label class="ms-1 mb-0 ml-2">Entries</label>
+    </div>
+
 </form>

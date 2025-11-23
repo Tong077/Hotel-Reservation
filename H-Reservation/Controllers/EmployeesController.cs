@@ -28,15 +28,33 @@ namespace H_Reservation.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Create");
+                // Send validation failed message
+                return Json(new
+                {
+                    success = false,
+                    message = "Invalid data, please check your fields."
+                });
             }
+
             var result = await _service.CreateEmployee(dto, default);
+
             if (result)
             {
-                return RedirectToAction("Index");
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = Url.Action("Index", "Employees")
+                });
             }
-            return View("Create");
+
+
+            return Json(new
+            {
+                success = false,
+                message = "Failed to save employee."
+            });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(int Id)
