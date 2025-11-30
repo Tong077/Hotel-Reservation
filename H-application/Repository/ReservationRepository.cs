@@ -27,6 +27,7 @@ namespace H_Reservation.Service
             var thisWeekCheckIns = await _context.Reservations
                 .Where(r => r.Status == "CheckedIn" && r.CheckInDate >= startOfWeek && r.CheckInDate <= today)
                 .CountAsync(cancellationToken);
+
             var lastWeekCheckIns = await _context.Reservations
                   .Where(r => r.Status == "CheckedIn" && r.CheckInDate >= lastWeekStart && r.CheckInDate <= lastWeekEnd)
                   .CountAsync(cancellationToken);
@@ -158,15 +159,14 @@ namespace H_Reservation.Service
                     .AsNoTracking()
                     .AsQueryable();
 
-            // 🔍 Search filter
+            // Search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(r =>
                     r.guest.FirstName.Contains(search) ||
                     r.guest.LastName.Contains(search));
             }
-
-            // 🔥 Convert to ReservationResponse WITHOUT ToList()
+            //  Convert to ReservationResponse WITHOUT ToList()
             var result = query
                 .GroupBy(r => r.ReservationId)
                 .Select(g => new ReservationResponse
@@ -194,9 +194,6 @@ namespace H_Reservation.Service
 
             return result;
         }
-
-
-
         public async Task<ReservationDtoUpdate> GetReservationByIdAsync(int id, CancellationToken cancellationToken = default)
         {
 
@@ -210,8 +207,6 @@ namespace H_Reservation.Service
             {
                 return null!;
             }
-
-
             var bookingReservations = await _context.Reservations
                 .Where(r => r.GuestId == reservation.GuestId
                             && r.CheckInDate == reservation.CheckInDate
@@ -224,7 +219,6 @@ namespace H_Reservation.Service
             {
                 return null!;
             }
-
 
             var dto = new ReservationDtoUpdate
             {
@@ -240,8 +234,6 @@ namespace H_Reservation.Service
                 CreatedAt = reservation.CreatedAt?.Date ?? DateTime.MinValue,
 
             };
-
-
             dto.RoomResponses = bookingReservations
                 .Where(r => r.rooms != null)
                 .Select(r => new RoomResponse
@@ -256,8 +248,6 @@ namespace H_Reservation.Service
 
             return dto;
         }
-
-
         public async Task<ReservationResponse> PendingReservatoin(CancellationToken cancellationToken)
         {
             var today = DateTime.Today;
@@ -288,7 +278,7 @@ namespace H_Reservation.Service
 
         public async Task<ReservationResponse> TotalReservation(CancellationToken cancellationToken)
         {
-            // 1️⃣ Get all reservations
+            // 1️ Get all reservations
             var reservations = await _context.Reservations
                 .ToListAsync(cancellationToken);
             // 2️⃣ Group by month and year using CreatedAt
@@ -304,27 +294,27 @@ namespace H_Reservation.Service
                 .ThenBy(x => x.Month)
                 .ToList();
 
-            // 3️⃣ Get current and previous month
+            // 3️Get current and previous month
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
             var previousMonth = currentMonth == 1 ? 12 : currentMonth - 1;
             var previousYear = currentMonth == 1 ? currentYear - 1 : currentYear;
 
-            // 4️⃣ Find total reservations for both months
+            // 4️Find total reservations for both months
             var currentMonthData = monthlyData
                 .FirstOrDefault(x => x.Month == currentMonth && x.Year == currentYear)?.Count ?? 0;
 
             var previousMonthData = monthlyData
                 .FirstOrDefault(x => x.Month == previousMonth && x.Year == previousYear)?.Count ?? 0;
 
-            // 5️⃣ Calculate growth
+            // 5️Calculate growth
             decimal growthPercent = 0;
             if (previousMonthData > 0)
             {
                 growthPercent = ((decimal)(currentMonthData - previousMonthData) / previousMonthData) * 100;
             }
 
-            // 6️⃣ Return as a single summary response
+            // 6️ Return as a single summary response
             return new ReservationResponse
             {
                 CurrentMonthTotal = currentMonthData,
@@ -345,18 +335,14 @@ namespace H_Reservation.Service
         {
             if (dto.ReservationId <= 0 || dto.RoomId == null || !dto.RoomId.Any())
                 return false;
-
             var anchorReservation = await _context.Reservations.FindAsync(dto.ReservationId);
             if (anchorReservation == null)
                 return false;
-
-
             var existingReservations = await _context.Reservations
                 .Where(r => r.GuestId == anchorReservation.GuestId
                             && r.CheckInDate == anchorReservation.CheckInDate
                             && r.CheckOutDate == anchorReservation.CheckOutDate)
                 .ToListAsync(cancellation);
-
             var newRoomIds = new HashSet<int>(dto.RoomId);
             var existingRoomIds = new HashSet<int>(existingReservations.Select(r => r.RoomId ?? 0));
             var perRoomPrice = (dto.TotalPrice ?? 0m) / dto.RoomId.Count;
@@ -364,7 +350,6 @@ namespace H_Reservation.Service
             using var transaction = await _context.Database.BeginTransactionAsync(cancellation);
             try
             {
-
                 foreach (var roomIdToRemove in existingRoomIds.Except(newRoomIds))
                 {
                     var oldRes = existingReservations.FirstOrDefault(r => r.RoomId == roomIdToRemove);
@@ -377,8 +362,6 @@ namespace H_Reservation.Service
                             oldRoom.Status = "Available";
                             _context.Rooms.Update(oldRoom);
                         }
-
-
                         _context.Reservations.Remove(oldRes);
                     }
                 }
@@ -404,8 +387,6 @@ namespace H_Reservation.Service
                         }
                     }
                 }
-
-
                 foreach (var roomIdToAdd in newRoomIds.Except(existingRoomIds))
                 {
                     var newRes = new Reservation
