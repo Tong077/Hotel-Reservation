@@ -1,38 +1,30 @@
-﻿using System.Data.Entity.Infrastructure;
-using System.Web.Mvc;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.Mvc.Filters;
+//using System.Web.Mvc;
+//namespace H_Reservation.Error
+//{
+//    public class GlobalExceptionFilter : IExceptionFilter
+//    {
+//        public void OnException(ExceptionContext context)
+//        {
+//            var ex = context.Exception;
+//            var message = ex.InnerException?.Message ?? ex.Message;
 
-namespace H_application.Error
-{
-    public class GlobalExceptionFilter : IExceptionFilter
-    {
-        public void OnException(ExceptionContext filterContext)
-        {
-            var ex = filterContext.Exception;
-            var innerMessage = ex.InnerException?.Message ?? ex.Message;
+//            if (context.Controller is Controller controller)
+//            {
+//                controller.TempData["toastr-type"] = "error";
+//                controller.TempData["toastr-message"] = message;
 
-            var controller = filterContext.Controller as Controller;
+//                context.Result = new ViewResult
+//                {
+//                    ViewName = "Error",
+//                    ViewData = controller.ViewData,
+//                    TempData = controller.TempData
+//                };
 
-            if (controller != null)
-            {
-                // Set TempData for Toastr notifications
-                controller.TempData["toastr-type"] = "error";
-                controller.TempData["toastr-message"] = ex is DbUpdateException
-                    ? $"Database update error: {innerMessage}"
-                    : $"Unexpected error: {innerMessage}";
-
-                // Add error to ModelState
-                controller.ViewData.ModelState.AddModelError("", innerMessage);
-
-                // Return a view manually
-                filterContext.Result = new ViewResult
-                {
-                    ViewName = "Error", // You need to create Views/Shared/Error.cshtml
-                    ViewData = controller.ViewData,
-                    TempData = controller.TempData
-                };
-
-                filterContext.ExceptionHandled = true;
-            }
-        }
-    }
-}
+//                context.ExceptionHandled = true;
+//                return;
+//            }
+//        }
+//    }
+//}

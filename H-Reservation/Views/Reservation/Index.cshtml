@@ -15,38 +15,28 @@
             <i class="fa-solid fa-square-plus"></i>
         </a>
         <form method="get" class="d-flex justify-content-end align-items-center mb-3 gap-2">
-
-            <!-- Search input + button together -->
             <div class="d-flex align-items-center gap-1">
                 <input type="text" name="search"
                        value="@ViewBag.Search"
-                       class="form-control form-control-sm"
+                       class="form-control-sm"
                        placeholder="Search guest name..."
                        style="max-width: 250px;" />
                 <button type="submit" class="btn btn-primary mr-2">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
-
-            <!-- Page size selector -->
             <div class="d-flex align-items-center ml-2">
                 <label class="me-1 mb-0 mr-2">Show</label>
-                <select name="pageSize" class="form-control form-control-sm" style="width: 80px;" onchange="this.form.submit()">
+                <select name="pageSize" class="form-control-sm" style="width: 80px;" onchange="this.form.submit()">
                     <option value="10" selected="@(pageSize == 10 ? "selected" : null)">10</option>
                     <option value="25" selected="@(pageSize == 25 ? "selected" : null)">25</option>
                     <option value="50" selected="@(pageSize == 50 ? "selected" : null)">50</option>
                     <option value="100" selected="@(pageSize == 100 ? "selected" : null)">100</option>
                 </select>
-
-
-
                 <label class="ms-1 mb-0 ml-2">Entries</label>
             </div>
 
         </form>
-
-
-        <!-- TABLE -->
         <div class="table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="bg-light">

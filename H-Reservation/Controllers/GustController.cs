@@ -21,9 +21,6 @@ namespace H_Reservation.Controllers
             var result = await _guest.GetAllAsync(default);
             return View("Index", result);
         }
-
-
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -186,9 +183,6 @@ namespace H_Reservation.Controllers
                 return Json(new { success = false, message = $"An unexpected error occurred: {ex.Message}" });
             }
         }
-
-
-
     }
 
 }

@@ -1,0 +1,33 @@
+﻿@using H_Application.DTOs.PermissionDto
+
+@model PermissionDtoCreate
+
+@{
+    ViewData["Title"] = "Permission";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Add new Permission </h4>
+        <form asp-controller="Permission" asp-action="Store" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+          
+           
+                <div class="form-group col-sm-12">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Name" class="control-label">Permission Name</label>
+                    <input asp-for="Name" type="text" placeholder="Full Name" class="form-control " />
+
+                </div>
+               
+              
+          
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+
+</div>

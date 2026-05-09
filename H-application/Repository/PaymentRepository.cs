@@ -390,7 +390,7 @@ namespace H_Reservation.Service
                     .ThenInclude(r => r.rooms)
                         .ThenInclude(rm => rm!.roomType)
                 .Include(p => p.Reservation!)
-                    .ThenInclude(r => r.ReservationServices) // Include extra services
+                    .ThenInclude(r => r.ReservationServices)
                         .ThenInclude(rs => rs.Service)
                 .FirstOrDefaultAsync(p => p.PaymentId == id, cancellationToken);
 
@@ -457,51 +457,6 @@ namespace H_Reservation.Service
             return await _context.SaveChangesAsync() > 0;
         }
 
-
-        //public async Task<bool> UpdatePaymentWithInvoiceAsync(PaymentDtoUpdate dto, CancellationToken cancellation = default)
-        //{
-
-        //    var payment = await _context.Payments
-        //        .Include(p => p.Reservation)
-        //        .FirstOrDefaultAsync(p => p.PaymentId == dto.PaymentId, cancellation);
-
-        //    if (payment == null)
-        //        throw new Exception("Payment not found");
-
-
-        //    payment.PaymentStatus = dto.PaymentStatus;
-        //    payment.Amount = dto.Amount;
-        //    payment.PaymentMethodId = dto.PaymentMethodId;
-        //    payment.RefundAmount = dto.RefundAmount ?? payment.RefundAmount;
-        //    payment.RefundDate = dto.RefundDate ?? payment.RefundDate;
-        //    payment.PaymentDate = dto.PaymentDate ?? payment.PaymentDate;
-        //    payment.Currency = dto.Currency ?? payment.Currency;
-
-        //    _context.Payments.Update(payment);
-        //    await _context.SaveChangesAsync(cancellation);
-
-
-        //    if (payment.PaymentStatus == "Completed")
-        //    {
-        //        var linkedReservations = await _context.Reservations
-        //            .Where(r => r.PaymentId == payment.PaymentId)
-        //            .ToListAsync(cancellation);
-
-        //        foreach (var reservation in linkedReservations)
-        //        {
-
-        //            var hasInvoice = await _context.Invoices
-        //                .AnyAsync(i => i.ReservationId == reservation.ReservationId, cancellation);
-
-        //            if (!hasInvoice)
-        //            {
-        //                await _invoicesService.CreateInvoiceAsync(reservation.ReservationId, cancellation);
-        //            }
-        //        }
-        //    }
-
-        //    return true;
-        //}
         public async Task<bool> UpdatePaymentWithInvoiceAsync(PaymentDtoUpdate dto, CancellationToken cancellation = default)
         {
             var payment = await _context.Payments

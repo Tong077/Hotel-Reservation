@@ -1,0 +1,40 @@
+﻿
+@using H_Application.DTOs.RoleDto
+
+
+@model RoleCreateDto
+
+@{
+    ViewData["Title"] = "Role";
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Add  Role </h4>
+        <form asp-controller="Roles" asp-action="Store" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+          
+           
+            <div class="form-group col-sm-12">
+                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Name" class="control-label">Role Name</label>
+                <input asp-for="Name" type="text" placeholder="Full Name" class="form-control " />
+
+            </div>
+
+            <div class="form-group col-sm-12">
+                <span asp-validation-for="PermissionIds" class="text-danger"></span>
+                <label asp-for="PermissionIds" class="control-label">Permissions</label>
+                <select asp-for="PermissionIds" asp-items="@ViewBag.Permissions" class="form-control" multiple>
+                </select>
+            </div>
+              
+            <div class="form-group float-right">
+                <button type="submit" class="btn btn-sm btn-success ml-1">Save</button>
+                <a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+
+</div>

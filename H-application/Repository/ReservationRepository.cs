@@ -321,15 +321,12 @@ namespace H_Reservation.Service
                 GrowthPercentage = Math.Round(growthPercent, 2)
             };
         }
-
-
         public async Task<bool> UpdateReservationAsync(ReservationDtoUpdate reservation, CancellationToken cancellationToken)
         {
             var entity = reservation.Adapt<Reservation>();
             _context.Reservations.Update(entity);
             return await _context.SaveChangesAsync() > 0;
         }
-
 
         public async Task<bool> UpdateReservationStatusAsync(ReservationDtoUpdate dto, CancellationToken cancellation)
         {
@@ -420,7 +417,6 @@ namespace H_Reservation.Service
                 return false;
             }
         }
-
         private string GetRoomStatusFromReservationStatus(string resStatus, DateTime? checkOutDate)
         {
             return resStatus switch
@@ -433,7 +429,6 @@ namespace H_Reservation.Service
                 _ => "Available"
             };
         }
-
         public async Task<ReservationResponse> ConfirmReservationAsync(CancellationToken cancellationToken)
         {
             var today = DateTime.Today;
@@ -460,8 +455,7 @@ namespace H_Reservation.Service
 
             };
         }
-
-        public async Task<List<MonthlyRevenueDto>> GetMonthlyRevenueByCurrencyAsync(string currency, int year, CancellationToken cancellationToken)
+       public async Task<List<MonthlyRevenueDto>> GetMonthlyRevenueByCurrencyAsync(string currency, int year, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(currency))
                 throw new ArgumentException("Currency cannot be null or empty.", nameof(currency));
@@ -497,7 +491,6 @@ namespace H_Reservation.Service
             return monthlyRevenue;
 
         }
-
         public async Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime? startDate, CancellationToken cancellationToken)
         {
             var start = startDate ?? DateTime.Today;

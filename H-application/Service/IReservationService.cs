@@ -8,19 +8,15 @@ namespace H_application.Service
         Task<bool> CreateReservationAsync(ReservationDtoCreate reservation, CancellationToken cancellationToken);
         Task<bool> UpdateReservationAsync(ReservationDtoUpdate reservation, CancellationToken cancellationToken);
         Task<bool> DeleteReservationAsync(ReservationDtoUpdate reservation, CancellationToken cancellationToken);
-
         Task<ReservationDtoUpdate> GetReservationByIdAsync(int Id, CancellationToken cancellationToken);
         IQueryable<ReservationResponse> GetAllReservationQuery(string search, CancellationToken cancellation= default);
-
         Task<bool> UpdateReservationStatusAsync(ReservationDtoUpdate dto, CancellationToken cancellation);
         Task<ReservationResponse> TotalReservation(CancellationToken cancellationToken);
         Task<List<MonthlyRevenueDto>> GetMonthlyRevenueByCurrencyAsync(string currency, int year, CancellationToken cancellationToken);
         Task<ReservationResponse> GetCheckInTrendAsync(CancellationToken cancellationToken);
         Task<ReservationResponse> ConfirmReservationAsync(CancellationToken cancellationToken);
         Task<ReservationResponse> PendingReservatoin(CancellationToken cancellationToken);
-
         Task<List<RoomCalendarDto>> GetRoomCalendarAsync(DateTime? startDate, CancellationToken cancellationToken);
-
         Task<IEnumerable<ReservationResponse>> GetAllReservationAsync(string filter, CancellationToken cancellationToken);
 
     }

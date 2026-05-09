@@ -73,25 +73,30 @@
                     <i class="fa-brands fa-servicestack mr-2"></i> <span class="nav-text">Services</span>
                 </a>
             </li>
-            @* <li>
-                <a asp-controller="BookingHistory" asp-action="Index" aria-expanded="false">
-                    <i class="fa-solid fa-notes-medical mr-2"></i> <span class="nav-text">BookingHistory</span>
-                </a>
-            </li> *@
-
+          
             <li>
                 <a asp-controller="Invoices" asp-action="Index" aria-expanded="false">
                     <i class="fa-solid fa-file-lines mr-2"></i> <span class="nav-text">Invoices</span>
                 </a>
             </li>
-            @* <li>
-                <a asp-controller="Reviews" asp-action="Index" aria-expanded="false">
-                    <i class="fa-solid fa-users-viewfinder mr-2"></i> <span class="nav-text">Reviews</span>
+
+
+            <li class="mega-menu mega-menu-sm">
+                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                    <i class="fa-solid fa-users mr-2"></i> <span class="nav-text">User Management</span>
                 </a>
-            </li> *@
-
-
-
+                <ul aria-expanded="false">
+                    <a asp-controller="User" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">User </span>
+                    </a>
+                    <a asp-controller="Roles" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Role</span>
+                    </a>
+                    <a asp-controller="Permission" asp-action="Index" aria-expanded="false">
+                        <span class="nav-text">Permission</span>
+                    </a>
+                </ul>
+            </li>
            
             <li class="mega-menu mega-menu-sm">
                 <a class="has-arrow" href="javascript:void()" aria-expanded="false">
@@ -100,13 +105,7 @@
                 <ul aria-expanded="false">
                     <a asp-controller="SystemSettings" asp-action="Index" aria-expanded="false">
                         <span class="nav-text">System Settings</span>
-                    </a>
-                    <a asp-controller="PaymentMethod" asp-action="Index" aria-expanded="false">
-                        <span class="nav-text">Payment Method</span>
-                    </a>
-                    <a asp-controller="PaymentMethod" asp-action="Index" aria-expanded="false">
-                        <span class="nav-text">Payment Method (2)</span>
-                    </a>
+                    </a> 
                 </ul>
             </li>
 

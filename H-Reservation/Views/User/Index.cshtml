@@ -1,0 +1,78 @@
+﻿@using H_application.DTOs.UserDto
+@model IEnumerable<UserRespone>
+<partial name="_style" />
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">User</h4>
+        <a asp-action="Create" class="btn btn-sm btn-success mt-2 mb-2"><i class="fa-solid fa-square-plus"></i></a>
+        <div class="table-responsive">
+            <table class="table table-stripped table-hover  zero-configuration">
+                <thead>
+                    <tr>
+
+                        <th>
+                            User Name
+                        </th>
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone Number
+                        </th>
+                        <th>
+                            Image
+                        </th>
+
+
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @Html.DisplayFor(items => item.Username)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.email)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(items => item.phonenumber)
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Image))
+                                {
+                                    <img src="~/uploads/users/@item.Image" alt="Profile Image" style="max-width: 80px; max-height: 80px;" class="img-thumbnail" />
+                                }
+                                else
+                                {
+                                    <span>No Image</span>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-controller="User" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary mr-1">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </a>
+                                <a asp-controller="User" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

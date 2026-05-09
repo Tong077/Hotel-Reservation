@@ -26,35 +26,45 @@ namespace H_application.Error
             {
                 _logger.LogError(ex, "Unhandled exception occurred");
 
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json";
+                // Check if it's an API request or MVC request
+                bool isApiRequest = context.Request.Path.StartsWithSegments("/api")
+                                 || context.Request.Headers["Accept"].ToString().Contains("application/json");
 
-                var errorResponse = new
+                if (isApiRequest)
                 {
-                    message = "An unexpected error occurred",
-                    detail = GetFullExceptionMessage(ex),
-                    stackTrace = ex.StackTrace
-                };
+                    // Return JSON for API requests
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
+                    var errorResponse = new
+                    {
+                        message = "An unexpected error occurred",
+                        detail = GetFullExceptionMessage(ex),
+                        stackTrace = ex.StackTrace
+                    };
+
+                    var result = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    });
+
+                    await context.Response.WriteAsync(result);
+                }
+                else
                 {
-                    WriteIndented = true
-                });
-
-                await context.Response.WriteAsync(result);
+                    // Store error in TempData via session for MVC views
+                    context.Session.SetString("ErrorMessage", GetFullExceptionMessage(ex));
+                    context.Response.Redirect("/Home/Index");
+                }
             }
         }
 
-        // Recursively get all inner exception messages
         private string GetFullExceptionMessage(Exception ex)
         {
             if (ex == null) return string.Empty;
-
             string message = ex.Message;
             if (ex.InnerException != null)
-            {
-                message += " | Inner Exception: " + GetFullExceptionMessage(ex.InnerException);
-            }
+                message += " | " + GetFullExceptionMessage(ex.InnerException);
             return message;
         }
     }

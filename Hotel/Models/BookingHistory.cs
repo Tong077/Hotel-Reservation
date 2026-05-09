@@ -1,11 +1,11 @@
-﻿namespace H_Domain.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace H_Domain.Models
 {
     public class BookingHistory
     {
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int HistoryId { get; set; }
-
-
         public int? ReservationId { get; set; }
 
 

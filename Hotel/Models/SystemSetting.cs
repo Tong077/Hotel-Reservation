@@ -1,8 +1,10 @@
-﻿namespace H_Domain.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace H_Domain.Models
 {
     public class SystemSetting
     {
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SettingId { get; set; }
         public string? Key { get; set; }
         public string? Value { get; set; }

@@ -4,14 +4,12 @@
 <partial name="_style" />
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">HouseKeeping Information</h4>
+        <h4 class="card-title">HouseKeeping</h4>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a asp-action="Create" class="btn btn-sm btn-success">
                 <i class="fa-solid fa-square-plus"></i>
             </a>
-
-
             <form id="bulkStatusForm" asp-action="BulkUpdateStatus" asp-controller="Housekeeping" method="post" class="form-inline">
                 
                 <select name="status" class="form-control form-control-sm mr-2" required>
@@ -22,8 +20,8 @@
                     <option value="Cleaning">Cleaning</option>
                 </select>
 
-                <button type="submit" class="btn btn-sm btn-info">
-                    Click Apply Status Change
+                <button type="submit" class="btn btn btn-info">
+                    Apply Status Change
                 </button>
             </form>
         </div>

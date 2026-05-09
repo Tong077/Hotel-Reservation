@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace H_Domain.Models   // ✅ corrected
 {
     public class Guest
     {
-        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GuestId { get; set; }
 
         public string? FirstName { get; set; }

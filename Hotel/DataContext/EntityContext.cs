@@ -2,11 +2,13 @@
 
 using H_Domain.Configuration;
 using H_Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace H_Domain.DataContext
 {
-    public class EntityContext : DbContext
+    public class EntityContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public EntityContext(DbContextOptions<EntityContext> options) : base(options)
         {
@@ -33,9 +35,12 @@ namespace H_Domain.DataContext
             optionsBuilder.ApplyConfiguration(new ReviewsConfiguration());
             optionsBuilder.ApplyConfiguration(new SystemSettingsConfiguraion());
             optionsBuilder.ApplyConfiguration(new ReservationRoomsConfiguration());
+            optionsBuilder.ApplyConfiguration(new UserConfiguration());
+            optionsBuilder.ApplyConfiguration(new PermissionConfiguration());
+            optionsBuilder.ApplyConfiguration(new RolePermissionConfiguration());
 
         }
-
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Hotels> Hotels { get; set; }
@@ -54,6 +59,8 @@ namespace H_Domain.DataContext
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<SystemSetting> SystemSettings { get; set; }
-
+        public DbSet<Permission> permissions { get; set; }
+        public DbSet<ApplicationRole> applicationRoles { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
     }
 }

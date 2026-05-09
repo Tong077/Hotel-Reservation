@@ -1,8 +1,10 @@
-﻿namespace H_Domain.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace H_Domain.Models
 {
     public class ReservationService
     {
-
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReservationServiceId { get; set; }
 
 

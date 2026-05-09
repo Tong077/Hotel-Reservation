@@ -1,13 +1,13 @@
-﻿using System.Web.Mvc;
+﻿//using H_Reservation.Error;
+//using System.Web.Mvc;
 
-namespace H_application.Error
-{
-    public class FilterConfig
-    {
-        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
-        {
-            filters.Add(new HandleErrorAttribute());
-            filters.Add(new GlobalExceptionFilter());
-        }
-    }
-}
+//namespace H_application.Error
+//{
+//    public class FilterConfig
+//    {
+//        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+//        {
+//            filters.Add(new HandleErrorAttribute());
+//            filters.Add(new GlobalExceptionFilter());
+//        }
+//    }

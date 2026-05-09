@@ -6,13 +6,12 @@ namespace H_Reservation.Controllers
 {
     public class EmployeesController : Controller
     {
+  
         private readonly IEmployeesService _service;
-
         public EmployeesController(IEmployeesService service)
         {
             _service = service;
         }
-
         public async Task<IActionResult> Index()
         {
             var result = await _service.GetEmployees();
@@ -26,33 +25,17 @@ namespace H_Reservation.Controllers
         [HttpPost]
         public async Task<IActionResult> Store(EmployeeDtoCreate dto)
         {
+
             if (!ModelState.IsValid)
             {
-                // Send validation failed message
-                return Json(new
-                {
-                    success = false,
-                    message = "Invalid data, please check your fields."
-                });
+                return View("Create", dto);
             }
-
-            var result = await _service.CreateEmployee(dto, default);
-
-            if (result)
+            var result = _service.CreateEmployee(dto);
+            if (result != null)
             {
-                return Json(new
-                {
-                    success = true,
-                    redirectUrl = Url.Action("Index", "Employees")
-                });
+                return RedirectToAction("index");
             }
-
-
-            return Json(new
-            {
-                success = false,
-                message = "Failed to save employee."
-            });
+            return View("Edit", dto);
         }
 
 

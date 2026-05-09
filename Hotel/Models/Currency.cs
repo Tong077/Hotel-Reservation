@@ -1,7 +1,10 @@
-﻿namespace H_Domain.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace H_Domain.Models
 {
     public class Currency
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int? CurrencyId { get; set; }
 
         public string? FromCurrency { get; set; }
